@@ -10,6 +10,7 @@ targets:
       PRODUCT_BUNDLE_IDENTIFIER: app.mac2fa
       INFOPLIST_FILE: Mac2FA/Info.plist
       CODE_SIGN_ENTITLEMENTS: Mac2FA/Mac2FA.entitlements
+      ENABLE_HARDENED_RUNTIME: YES
       SWIFT_VERSION: "6.0"
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     dependencies: []

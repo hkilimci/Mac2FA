@@ -105,14 +105,17 @@ struct QRImageImportView: View {
                 }
                 return true
             }
-            provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { data, _ in
-                if let data = data as? Data,
-                   let url = URL(dataRepresentation: data, relativeTo: nil),
-                   let image = NSImage(contentsOf: url) {
-                    DispatchQueue.main.async {
-                        processImage(image)
+            if provider.hasItemConformingToTypeIdentifier("public.file-url") {
+                provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { data, _ in
+                    if let data = data as? Data,
+                       let url = URL(dataRepresentation: data, relativeTo: nil),
+                       let image = NSImage(contentsOf: url) {
+                        DispatchQueue.main.async {
+                            processImage(image)
+                        }
                     }
                 }
+                return true
             }
         }
         return false

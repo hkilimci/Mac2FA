@@ -25,6 +25,33 @@ final class GoogleMigrationParserTests: XCTestCase {
         XCTAssertEqual(drafts.count, 2)
     }
 
+    func testSkipsUnknownLengthDelimitedTopLevelField() throws {
+        var payload = Data()
+        payload.append(0x12) // field 2, wire type 2
+        payload.append(0x01)
+        payload.append(0xFF)
+        payload.append(createMinimalMigrationPayload())
+
+        let base64 = payload.base64EncodedString()
+        let uri = "otpauth-migration://offline?data=\(base64)"
+
+        let drafts = try GoogleMigrationParser.parse(uri)
+        XCTAssertEqual(drafts.count, 1)
+        XCTAssertEqual(drafts[0].label, "Test")
+    }
+
+    func testTruncatedLengthDelimitedFieldThrowsInvalidProtobuf() {
+        let payload = Data([0x0A, 0x05, 0x01])
+        let base64 = payload.base64EncodedString()
+        let uri = "otpauth-migration://offline?data=\(base64)"
+
+        XCTAssertThrowsError(try GoogleMigrationParser.parse(uri)) { error in
+            guard case GoogleMigrationParserError.invalidProtobuf = error else {
+                return XCTFail("Expected invalidProtobuf, got \(error)")
+            }
+        }
+    }
+
     private func createMinimalMigrationPayload() -> Data {
         var data = Data()
         // OtpParameters (field 1, wire type 2)

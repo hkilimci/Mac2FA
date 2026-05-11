@@ -32,25 +32,15 @@ struct GoogleMigrationParser {
         var index = data.startIndex
 
         while index < data.endIndex {
-            let tag = data[index]
-            index = data.index(after: index)
-            let fieldNumber = Int(tag >> 3)
-            let wireType = tag & 0x07
+            let (fieldNumber, wireType, nextIndex) = try decodeTag(data, from: index)
+            index = nextIndex
 
             if fieldNumber == 1 && wireType == 2 {
-                let (length, newIndex) = decodeVarint(data, from: index)
+                let (parametersData, newIndex) = try readLengthDelimited(data, from: index)
+                accounts.append(try parseOtpParameters(parametersData))
                 index = newIndex
-                guard let lengthValue = length else { break }
-                let endIndex = data.index(index, offsetBy: Int(lengthValue))
-                let parametersData = data[index..<endIndex]
-                if let account = try? parseOtpParameters(parametersData) {
-                    accounts.append(account)
-                }
-                index = endIndex
             } else {
-                let (value, newIndex) = decodeVarint(data, from: index)
-                index = newIndex
-                if value == nil { break }
+                index = try skipField(wireType: wireType, data: data, from: index)
             }
         }
 
@@ -68,57 +58,56 @@ struct GoogleMigrationParser {
 
         var index = data.startIndex
         while index < data.endIndex {
-            let tag = data[index]
-            index = data.index(after: index)
-            let fieldNumber = Int(tag >> 3)
-            let wireType = tag & 0x07
+            let (fieldNumber, wireType, nextIndex) = try decodeTag(data, from: index)
+            index = nextIndex
 
             switch (fieldNumber, wireType) {
             case (1, 2):
-                let (length, newIndex) = decodeVarint(data, from: index)
+                let (fieldData, newIndex) = try readLengthDelimited(data, from: index)
+                secret = fieldData
                 index = newIndex
-                guard let lengthValue = length else { break }
-                let endIndex = data.index(index, offsetBy: Int(lengthValue))
-                secret = Data(data[index..<endIndex])
-                index = endIndex
             case (2, 2):
-                let (length, newIndex) = decodeVarint(data, from: index)
-                index = newIndex
-                guard let lengthValue = length else { break }
-                let endIndex = data.index(index, offsetBy: Int(lengthValue))
-                if let str = String(data: data[index..<endIndex], encoding: .utf8) {
+                let (fieldData, newIndex) = try readLengthDelimited(data, from: index)
+                if let str = String(data: fieldData, encoding: .utf8) {
                     name = str
                 }
-                index = endIndex
-            case (3, 2):
-                let (length, newIndex) = decodeVarint(data, from: index)
                 index = newIndex
-                guard let lengthValue = length else { break }
-                let endIndex = data.index(index, offsetBy: Int(lengthValue))
-                if let str = String(data: data[index..<endIndex], encoding: .utf8) {
+            case (3, 2):
+                let (fieldData, newIndex) = try readLengthDelimited(data, from: index)
+                if let str = String(data: fieldData, encoding: .utf8) {
                     issuer = str
                 }
-                index = endIndex
+                index = newIndex
             case (4, 0):
                 let (value, newIndex) = decodeVarint(data, from: index)
+                guard let value else { throw GoogleMigrationParserError.invalidProtobuf }
+                guard let intValue = Int(exactly: value) else { throw GoogleMigrationParserError.invalidProtobuf }
                 index = newIndex
-                algorithm = mapAlgorithm(Int(value ?? 0))
+                algorithm = mapAlgorithm(intValue)
             case (5, 0):
                 let (value, newIndex) = decodeVarint(data, from: index)
+                guard let value else { throw GoogleMigrationParserError.invalidProtobuf }
+                guard let intValue = Int(exactly: value) else { throw GoogleMigrationParserError.invalidProtobuf }
                 index = newIndex
-                digits = mapDigits(Int(value ?? 0))
+                digits = mapDigits(intValue)
             case (6, 0):
                 let (value, newIndex) = decodeVarint(data, from: index)
+                guard let value else { throw GoogleMigrationParserError.invalidProtobuf }
+                guard let intValue = Int(exactly: value) else { throw GoogleMigrationParserError.invalidProtobuf }
                 index = newIndex
-                type = mapType(Int(value ?? 0))
+                type = mapType(intValue)
             case (7, 0):
                 let (value, newIndex) = decodeVarint(data, from: index)
+                guard let value else { throw GoogleMigrationParserError.invalidProtobuf }
                 index = newIndex
-                counter = value ?? 0
+                counter = value
             default:
-                let (_, newIndex) = skipField(wireType: wireType, data: data, from: index)
-                index = newIndex
+                index = try skipField(wireType: wireType, data: data, from: index)
             }
+        }
+
+        guard !secret.isEmpty else {
+            throw GoogleMigrationParserError.invalidProtobuf
         }
 
         let label: String
@@ -162,26 +151,53 @@ struct GoogleMigrationParser {
         return (nil, index)
     }
 
-    private static func skipField(wireType: UInt8, data: Data, from startIndex: Data.Index) -> (Data?, Data.Index) {
-        var index = startIndex
+    private static func decodeTag(_ data: Data, from startIndex: Data.Index) throws -> (fieldNumber: Int, wireType: UInt8, nextIndex: Data.Index) {
+        let (tag, nextIndex) = decodeVarint(data, from: startIndex)
+        guard let tag, tag != 0 else {
+            throw GoogleMigrationParserError.invalidProtobuf
+        }
+        guard let fieldNumber = Int(exactly: tag >> 3) else {
+            throw GoogleMigrationParserError.invalidProtobuf
+        }
+        return (fieldNumber, UInt8(tag & 0x07), nextIndex)
+    }
+
+    private static func readLengthDelimited(_ data: Data, from startIndex: Data.Index) throws -> (Data, Data.Index) {
+        let (length, valueIndex) = decodeVarint(data, from: startIndex)
+        guard let length else {
+            throw GoogleMigrationParserError.invalidProtobuf
+        }
+        guard length <= UInt64(data.distance(from: valueIndex, to: data.endIndex)) else {
+            throw GoogleMigrationParserError.invalidProtobuf
+        }
+        let endIndex = data.index(valueIndex, offsetBy: Int(length))
+        return (Data(data[valueIndex..<endIndex]), endIndex)
+    }
+
+    private static func advanceIndex(_ data: Data, from startIndex: Data.Index, by count: Int) throws -> Data.Index {
+        guard count <= data.distance(from: startIndex, to: data.endIndex) else {
+            throw GoogleMigrationParserError.invalidProtobuf
+        }
+        return data.index(startIndex, offsetBy: count)
+    }
+
+    private static func skipField(wireType: UInt8, data: Data, from startIndex: Data.Index) throws -> Data.Index {
         switch wireType {
         case 0:
-            let (_, newIndex) = decodeVarint(data, from: index)
-            return (nil, newIndex)
+            let (value, newIndex) = decodeVarint(data, from: startIndex)
+            guard value != nil else {
+                throw GoogleMigrationParserError.invalidProtobuf
+            }
+            return newIndex
         case 2:
-            let (length, newIndex) = decodeVarint(data, from: index)
-            index = newIndex
-            guard let lengthValue = length else { return (nil, index) }
-            let endIndex = data.index(index, offsetBy: Int(lengthValue))
-            return (data[index..<endIndex], endIndex)
+            let (_, newIndex) = try readLengthDelimited(data, from: startIndex)
+            return newIndex
         case 5:
-            let endIndex = data.index(index, offsetBy: 4)
-            return (data[index..<endIndex], endIndex)
+            return try advanceIndex(data, from: startIndex, by: 4)
         case 1:
-            let endIndex = data.index(index, offsetBy: 8)
-            return (data[index..<endIndex], endIndex)
+            return try advanceIndex(data, from: startIndex, by: 8)
         default:
-            return (nil, index)
+            throw GoogleMigrationParserError.invalidProtobuf
         }
     }
 

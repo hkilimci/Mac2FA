@@ -44,6 +44,8 @@ actor AccountStore {
     }
 
     func addAccount(draft: OTPAccountDraft) async throws -> OTPAccount {
+        loadAccountsIfNeeded()
+
         guard draft.type == .totp else {
             throw AccountStoreError.invalidAccountType
         }
@@ -60,6 +62,10 @@ actor AccountStore {
         let code = try TOTP.generate(secret: draft.secretData, algorithm: draft.algorithm, digits: draft.digits)
         guard code.count == draft.digits else {
             throw AccountStoreError.failedToGenerateCode
+        }
+
+        if accounts.contains(where: { $0.issuer == draft.issuer && $0.label == draft.label }) {
+            throw AccountStoreError.duplicateAccount
         }
 
         let secretIdentifier = UUID().uuidString
@@ -79,16 +85,20 @@ actor AccountStore {
             updatedAt: Date()
         )
 
-        if accounts.contains(where: { $0.issuer == account.issuer && $0.label == account.label }) {
-            throw AccountStoreError.duplicateAccount
-        }
-
         accounts.append(account)
-        try saveAccounts()
+        do {
+            try saveAccounts()
+        } catch {
+            accounts.removeAll { $0.id == account.id }
+            try? KeychainStore.delete(identifier: secretIdentifier)
+            throw error
+        }
         return account
     }
 
     func replaceAccount(draft: OTPAccountDraft, existingId: UUID) async throws -> OTPAccount {
+        loadAccountsIfNeeded()
+
         guard draft.type == .totp else {
             throw AccountStoreError.invalidAccountType
         }
@@ -97,6 +107,9 @@ actor AccountStore {
         }
         guard draft.period > 0 else {
             throw AccountStoreError.invalidPeriod
+        }
+        guard draft.algorithm == .sha1 || draft.algorithm == .sha256 || draft.algorithm == .sha512 else {
+            throw AccountStoreError.invalidAlgorithm
         }
 
         let code = try TOTP.generate(secret: draft.secretData, algorithm: draft.algorithm, digits: draft.digits)
@@ -109,7 +122,6 @@ actor AccountStore {
         }
 
         let existing = accounts[existingIndex]
-        try KeychainStore.delete(identifier: existing.secretIdentifier)
         let secretIdentifier = UUID().uuidString
         try KeychainStore.save(secret: draft.secretData, identifier: secretIdentifier)
 
@@ -128,16 +140,30 @@ actor AccountStore {
         )
 
         accounts[existingIndex] = account
-        try saveAccounts()
+        do {
+            try saveAccounts()
+        } catch {
+            accounts[existingIndex] = existing
+            try? KeychainStore.delete(identifier: secretIdentifier)
+            throw error
+        }
+        try? KeychainStore.delete(identifier: existing.secretIdentifier)
         return account
     }
 
     func deleteAccount(id: UUID) throws {
+        loadAccountsIfNeeded()
+
         guard let index = accounts.firstIndex(where: { $0.id == id }) else { return }
         let account = accounts[index]
-        try? KeychainStore.delete(identifier: account.secretIdentifier)
         accounts.remove(at: index)
-        try saveAccounts()
+        do {
+            try saveAccounts()
+        } catch {
+            accounts.insert(account, at: index)
+            throw error
+        }
+        try? KeychainStore.delete(identifier: account.secretIdentifier)
     }
 
     func getSecret(for account: OTPAccount) -> Data? {
