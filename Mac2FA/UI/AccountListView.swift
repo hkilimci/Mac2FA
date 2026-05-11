@@ -5,6 +5,7 @@ struct AccountListView: View {
     @State private var searchText: String = ""
     @State private var showingAddSheet = false
     @State private var timer: Timer? = nil
+    @State private var accountPendingDeletion: OTPAccount?
 
     var filteredAccounts: [OTPAccount] {
         if searchText.isEmpty { return accounts }
@@ -19,6 +20,13 @@ struct AccountListView: View {
             List {
                 ForEach(filteredAccounts) { account in
                     AccountRowView(account: account)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                accountPendingDeletion = account
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                 }
                 .onDelete(perform: deleteAccount)
             }
@@ -37,6 +45,23 @@ struct AccountListView: View {
                 Task { await loadAccounts() }
             }
         }
+        .confirmationDialog(
+            confirmationTitle,
+            isPresented: Binding(
+                get: { accountPendingDeletion != nil },
+                set: { if !$0 { accountPendingDeletion = nil } }
+            ),
+            presenting: accountPendingDeletion
+        ) { account in
+            Button("Delete", role: .destructive) {
+                confirmDelete(account)
+            }
+            Button("Cancel", role: .cancel) {
+                accountPendingDeletion = nil
+            }
+        } message: { account in
+            Text("This will permanently remove \(displayName(for: account)) and its secret from the keychain.")
+        }
         .task {
             await loadAccounts()
             startTimer()
@@ -45,6 +70,20 @@ struct AccountListView: View {
             timer?.invalidate()
         }
         }
+    }
+
+    private var confirmationTitle: String {
+        if let account = accountPendingDeletion {
+            return "Delete \(displayName(for: account))?"
+        }
+        return "Delete account?"
+    }
+
+    private func displayName(for account: OTPAccount) -> String {
+        if !account.issuer.isEmpty && !account.label.isEmpty {
+            return "\(account.issuer) (\(account.label))"
+        }
+        return account.issuer.isEmpty ? account.label : account.issuer
     }
 
     private func loadAccounts() async {
@@ -66,6 +105,14 @@ struct AccountListView: View {
                 try? await AccountStore.shared.deleteAccount(id: account.id)
                 await loadAccounts()
             }
+        }
+    }
+
+    private func confirmDelete(_ account: OTPAccount) {
+        accountPendingDeletion = nil
+        Task {
+            try? await AccountStore.shared.deleteAccount(id: account.id)
+            await loadAccounts()
         }
     }
 }
