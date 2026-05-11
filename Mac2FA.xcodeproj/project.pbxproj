@@ -1,0 +1,542 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		149CADE6027F64E1EE57E7EC /* Mac2FAApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E588296F845F33A58DC220AB /* Mac2FAApp.swift */; };
+		18ABE34AA36951E4406D866F /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0ACF7D1F6607B0A4BC1373 /* AccountStore.swift */; };
+		19DC412F16C76BDA456AA83F /* TimeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D884277297307539181434DC /* TimeProvider.swift */; };
+		1D8E13801925B6A412BF82ED /* ClipboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9EDAA17B1518F46F4B3F533 /* ClipboardManager.swift */; };
+		375D0D68DEABC32AD6D64B5E /* GoogleMigrationParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E4B13120C1B354798B8956 /* GoogleMigrationParserTests.swift */; };
+		3B6CC5D8AE456E0176ECCCA3 /* OTPAuthParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9B974C388BFDE0B73721EB /* OTPAuthParser.swift */; };
+		4F90EFAC320DE0D8E2CB3F79 /* OTPType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C19A6D1F4C908A2446C0213 /* OTPType.swift */; };
+		6164185A2C969F83DF084026 /* QRImageImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F924FA5866717A87AB206 /* QRImageImportView.swift */; };
+		63FDD6A38972817D3F203889 /* PasteURIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC65D4DCFD8DDB168286811 /* PasteURIView.swift */; };
+		653A6C14FA271C01E1FB9D16 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56817727270DEE91B1C13F8E /* Assets.xcassets */; };
+		68B1348F6CC76E9E9BE16A80 /* OTPAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C126D2A61448FED25884B9 /* OTPAlgorithm.swift */; };
+		698CE8871AEE97DD2F0DE7BD /* GoogleMigrationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1827839AA5D34A84EBE8B6 /* GoogleMigrationParser.swift */; };
+		757F48AA7134DA4F457382C6 /* AccountListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C13F910B9487C7C5FC4DB0 /* AccountListView.swift */; };
+		7A22B82E654D73E0AC3D1246 /* HOTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = D481BB1F159720B3B1793B7D /* HOTP.swift */; };
+		850A5FB67398B9AF8F1CE7B4 /* AccountRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264AAF7D15E7135F12029354 /* AccountRowView.swift */; };
+		913787829945B21EC96395EA /* OTPAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1766847ABE8534E9A0647A0A /* OTPAccount.swift */; };
+		91E1ADF7645DECA8D2EE916C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC1E830EDA36AF6FD675584 /* ContentView.swift */; };
+		A490D02E9FBD10D4C14F6B58 /* Base32.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09AD7B4CC1717166DD5BB53 /* Base32.swift */; };
+		B531C9651BBD2E0B08C6B5E6 /* TOTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359A012D3589F4989603E209 /* TOTP.swift */; };
+		B595D03650D4EB3E8D9CBA56 /* TOTPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38535B05B4EAE7E9487101C0 /* TOTPTests.swift */; };
+		C70F8E4E662F07EC07F10079 /* AddAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DD71B224EF9F0575CF4CBB8 /* AddAccountView.swift */; };
+		D4A75157BAFC22E159B62B46 /* Base32Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFF23ABAD1364427F44E1CD5 /* Base32Tests.swift */; };
+		E089488AED9101D0C1168350 /* ManualEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046846CFF20ACA253D4077DB /* ManualEntryView.swift */; };
+		E995EDFEFDABD1D2AF76F8C9 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC03520671A93F3BDB1ED05 /* KeychainStore.swift */; };
+		FCEF00869FA07DFBCB224DA5 /* OTPAuthParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76371394755FB67DEFEF601E /* OTPAuthParserTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		ED383BAF297DC283F4CFD7E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 819FDC78C47B1226CAB3B452 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0527BE5CE96AFF451AE92EC0;
+			remoteInfo = Mac2FA;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		03E4B13120C1B354798B8956 /* GoogleMigrationParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleMigrationParserTests.swift; sourceTree = "<group>"; };
+		046846CFF20ACA253D4077DB /* ManualEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualEntryView.swift; sourceTree = "<group>"; };
+		0E4F924FA5866717A87AB206 /* QRImageImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageImportView.swift; sourceTree = "<group>"; };
+		1766847ABE8534E9A0647A0A /* OTPAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPAccount.swift; sourceTree = "<group>"; };
+		1AC03520671A93F3BDB1ED05 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		264AAF7D15E7135F12029354 /* AccountRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRowView.swift; sourceTree = "<group>"; };
+		359A012D3589F4989603E209 /* TOTP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOTP.swift; sourceTree = "<group>"; };
+		38535B05B4EAE7E9487101C0 /* TOTPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOTPTests.swift; sourceTree = "<group>"; };
+		521C950C28C961C325307E7B /* Mac2FATests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Mac2FATests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		56817727270DEE91B1C13F8E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5B18EF97EB2CA448D3714392 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		6D0ACF7D1F6607B0A4BC1373 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
+		76371394755FB67DEFEF601E /* OTPAuthParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPAuthParserTests.swift; sourceTree = "<group>"; };
+		7AC1E830EDA36AF6FD675584 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		83A5ED200FCC7E9FA5B6B6E3 /* Mac2FA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mac2FA.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		845D3D0791090CDC28330EF7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8C1827839AA5D34A84EBE8B6 /* GoogleMigrationParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleMigrationParser.swift; sourceTree = "<group>"; };
+		9C19A6D1F4C908A2446C0213 /* OTPType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPType.swift; sourceTree = "<group>"; };
+		9DD71B224EF9F0575CF4CBB8 /* AddAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAccountView.swift; sourceTree = "<group>"; };
+		A5C126D2A61448FED25884B9 /* OTPAlgorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPAlgorithm.swift; sourceTree = "<group>"; };
+		B9EDAA17B1518F46F4B3F533 /* ClipboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardManager.swift; sourceTree = "<group>"; };
+		CD9B974C388BFDE0B73721EB /* OTPAuthParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPAuthParser.swift; sourceTree = "<group>"; };
+		D481BB1F159720B3B1793B7D /* HOTP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOTP.swift; sourceTree = "<group>"; };
+		D884277297307539181434DC /* TimeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeProvider.swift; sourceTree = "<group>"; };
+		DC3636C1C9B3F5C39A3082AD /* Mac2FA.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Mac2FA.entitlements; sourceTree = "<group>"; };
+		DFF23ABAD1364427F44E1CD5 /* Base32Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base32Tests.swift; sourceTree = "<group>"; };
+		E09AD7B4CC1717166DD5BB53 /* Base32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base32.swift; sourceTree = "<group>"; };
+		E588296F845F33A58DC220AB /* Mac2FAApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mac2FAApp.swift; sourceTree = "<group>"; };
+		E8C13F910B9487C7C5FC4DB0 /* AccountListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListView.swift; sourceTree = "<group>"; };
+		FAC65D4DCFD8DDB168286811 /* PasteURIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteURIView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1035CECEC5B206A6A96B9A61 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				6D0ACF7D1F6607B0A4BC1373 /* AccountStore.swift */,
+				1AC03520671A93F3BDB1ED05 /* KeychainStore.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		28476D6160DFC586A30A6387 /* Mac2FATests */ = {
+			isa = PBXGroup;
+			children = (
+				DFF23ABAD1364427F44E1CD5 /* Base32Tests.swift */,
+				03E4B13120C1B354798B8956 /* GoogleMigrationParserTests.swift */,
+				5B18EF97EB2CA448D3714392 /* Info.plist */,
+				76371394755FB67DEFEF601E /* OTPAuthParserTests.swift */,
+				38535B05B4EAE7E9487101C0 /* TOTPTests.swift */,
+			);
+			path = Mac2FATests;
+			sourceTree = "<group>";
+		};
+		458A2FF400ACBA1A4F116950 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				E8C13F910B9487C7C5FC4DB0 /* AccountListView.swift */,
+				264AAF7D15E7135F12029354 /* AccountRowView.swift */,
+				9DD71B224EF9F0575CF4CBB8 /* AddAccountView.swift */,
+				7AC1E830EDA36AF6FD675584 /* ContentView.swift */,
+				046846CFF20ACA253D4077DB /* ManualEntryView.swift */,
+				FAC65D4DCFD8DDB168286811 /* PasteURIView.swift */,
+				0E4F924FA5866717A87AB206 /* QRImageImportView.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		87EE5B6876E947F1A8D1ADE5 = {
+			isa = PBXGroup;
+			children = (
+				98D7F38F30E7F05E041B7EAC /* Mac2FA */,
+				28476D6160DFC586A30A6387 /* Mac2FATests */,
+				C46427D27DD51211E84CF235 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		98D7F38F30E7F05E041B7EAC /* Mac2FA */ = {
+			isa = PBXGroup;
+			children = (
+				56817727270DEE91B1C13F8E /* Assets.xcassets */,
+				845D3D0791090CDC28330EF7 /* Info.plist */,
+				DC3636C1C9B3F5C39A3082AD /* Mac2FA.entitlements */,
+				AA8181336F9F953817570A95 /* App */,
+				E5D930FD304568C7AF802F36 /* Models */,
+				DF5C4079FB472141DF66ECC6 /* OTP */,
+				1035CECEC5B206A6A96B9A61 /* Storage */,
+				458A2FF400ACBA1A4F116950 /* UI */,
+				BD69D79460CAFD8670DA58D6 /* Utilities */,
+			);
+			path = Mac2FA;
+			sourceTree = "<group>";
+		};
+		AA8181336F9F953817570A95 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				E588296F845F33A58DC220AB /* Mac2FAApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		BD69D79460CAFD8670DA58D6 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B9EDAA17B1518F46F4B3F533 /* ClipboardManager.swift */,
+				D884277297307539181434DC /* TimeProvider.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		C46427D27DD51211E84CF235 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				83A5ED200FCC7E9FA5B6B6E3 /* Mac2FA.app */,
+				521C950C28C961C325307E7B /* Mac2FATests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DF5C4079FB472141DF66ECC6 /* OTP */ = {
+			isa = PBXGroup;
+			children = (
+				E09AD7B4CC1717166DD5BB53 /* Base32.swift */,
+				8C1827839AA5D34A84EBE8B6 /* GoogleMigrationParser.swift */,
+				D481BB1F159720B3B1793B7D /* HOTP.swift */,
+				CD9B974C388BFDE0B73721EB /* OTPAuthParser.swift */,
+				359A012D3589F4989603E209 /* TOTP.swift */,
+			);
+			path = OTP;
+			sourceTree = "<group>";
+		};
+		E5D930FD304568C7AF802F36 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1766847ABE8534E9A0647A0A /* OTPAccount.swift */,
+				A5C126D2A61448FED25884B9 /* OTPAlgorithm.swift */,
+				9C19A6D1F4C908A2446C0213 /* OTPType.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0527BE5CE96AFF451AE92EC0 /* Mac2FA */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 83652FF4F3AF2FC87F4CCC9B /* Build configuration list for PBXNativeTarget "Mac2FA" */;
+			buildPhases = (
+				A9F34101721D38C33C86F743 /* Sources */,
+				A7DD19AE6F6A6E02D4F8C903 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Mac2FA;
+			packageProductDependencies = (
+			);
+			productName = Mac2FA;
+			productReference = 83A5ED200FCC7E9FA5B6B6E3 /* Mac2FA.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6A41FE2612D3713F923FA441 /* Mac2FATests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E96104794E126F6A63FEEC6E /* Build configuration list for PBXNativeTarget "Mac2FATests" */;
+			buildPhases = (
+				D379A223DB550BCD419407C2 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6212AC41672BC46DCB17447B /* PBXTargetDependency */,
+			);
+			name = Mac2FATests;
+			packageProductDependencies = (
+			);
+			productName = Mac2FATests;
+			productReference = 521C950C28C961C325307E7B /* Mac2FATests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		819FDC78C47B1226CAB3B452 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 4F13F4352DC9D2B3A7FC5D0B /* Build configuration list for PBXProject "Mac2FA" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 87EE5B6876E947F1A8D1ADE5;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0527BE5CE96AFF451AE92EC0 /* Mac2FA */,
+				6A41FE2612D3713F923FA441 /* Mac2FATests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A7DD19AE6F6A6E02D4F8C903 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				653A6C14FA271C01E1FB9D16 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A9F34101721D38C33C86F743 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				757F48AA7134DA4F457382C6 /* AccountListView.swift in Sources */,
+				850A5FB67398B9AF8F1CE7B4 /* AccountRowView.swift in Sources */,
+				18ABE34AA36951E4406D866F /* AccountStore.swift in Sources */,
+				C70F8E4E662F07EC07F10079 /* AddAccountView.swift in Sources */,
+				A490D02E9FBD10D4C14F6B58 /* Base32.swift in Sources */,
+				1D8E13801925B6A412BF82ED /* ClipboardManager.swift in Sources */,
+				91E1ADF7645DECA8D2EE916C /* ContentView.swift in Sources */,
+				698CE8871AEE97DD2F0DE7BD /* GoogleMigrationParser.swift in Sources */,
+				7A22B82E654D73E0AC3D1246 /* HOTP.swift in Sources */,
+				E995EDFEFDABD1D2AF76F8C9 /* KeychainStore.swift in Sources */,
+				149CADE6027F64E1EE57E7EC /* Mac2FAApp.swift in Sources */,
+				E089488AED9101D0C1168350 /* ManualEntryView.swift in Sources */,
+				913787829945B21EC96395EA /* OTPAccount.swift in Sources */,
+				68B1348F6CC76E9E9BE16A80 /* OTPAlgorithm.swift in Sources */,
+				3B6CC5D8AE456E0176ECCCA3 /* OTPAuthParser.swift in Sources */,
+				4F90EFAC320DE0D8E2CB3F79 /* OTPType.swift in Sources */,
+				63FDD6A38972817D3F203889 /* PasteURIView.swift in Sources */,
+				6164185A2C969F83DF084026 /* QRImageImportView.swift in Sources */,
+				B531C9651BBD2E0B08C6B5E6 /* TOTP.swift in Sources */,
+				19DC412F16C76BDA456AA83F /* TimeProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D379A223DB550BCD419407C2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4A75157BAFC22E159B62B46 /* Base32Tests.swift in Sources */,
+				375D0D68DEABC32AD6D64B5E /* GoogleMigrationParserTests.swift in Sources */,
+				FCEF00869FA07DFBCB224DA5 /* OTPAuthParserTests.swift in Sources */,
+				B595D03650D4EB3E8D9CBA56 /* TOTPTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6212AC41672BC46DCB17447B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0527BE5CE96AFF451AE92EC0 /* Mac2FA */;
+			targetProxy = ED383BAF297DC283F4CFD7E1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		08070492CCEE8E6A9A1722E3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Mac2FATests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.mac2fa.tests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac2FA.app/Contents/MacOS/Mac2FA";
+			};
+			name = Debug;
+		};
+		13FD2CCF986FC83306CC0A56 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Mac2FA/Mac2FA.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Mac2FA/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.mac2fa;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		1CF808FCDE45B775872F30C2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		3BC2041D843FD377E28D7A06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Mac2FA/Mac2FA.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Mac2FA/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.mac2fa;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		5CC19F72B73C0E80D2472967 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Mac2FATests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.mac2fa.tests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac2FA.app/Contents/MacOS/Mac2FA";
+			};
+			name = Release;
+		};
+		8FD8661D13D44C0EA2385BFB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4F13F4352DC9D2B3A7FC5D0B /* Build configuration list for PBXProject "Mac2FA" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8FD8661D13D44C0EA2385BFB /* Debug */,
+				1CF808FCDE45B775872F30C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		83652FF4F3AF2FC87F4CCC9B /* Build configuration list for PBXNativeTarget "Mac2FA" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3BC2041D843FD377E28D7A06 /* Debug */,
+				13FD2CCF986FC83306CC0A56 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E96104794E126F6A63FEEC6E /* Build configuration list for PBXNativeTarget "Mac2FATests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08070492CCEE8E6A9A1722E3 /* Debug */,
+				5CC19F72B73C0E80D2472967 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 819FDC78C47B1226CAB3B452 /* Project object */;
+}
