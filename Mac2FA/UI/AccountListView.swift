@@ -20,6 +20,9 @@ struct AccountListView: View {
             List {
                 ForEach(filteredAccounts) { account in
                     AccountRowView(account: account)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
                         .contextMenu {
                             Button(role: .destructive) {
                                 accountPendingDeletion = account
@@ -30,6 +33,8 @@ struct AccountListView: View {
                 }
                 .onDelete(perform: deleteAccount)
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
             .searchable(text: $searchText, placement: .toolbar)
             .navigationTitle("Mac2FA")
         .toolbar {
