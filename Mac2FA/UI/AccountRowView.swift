@@ -7,35 +7,53 @@ struct AccountRowView: View {
     @State private var timer: Timer? = nil
     @State private var showCopied = false
 
+    private let codeColor = Color(red: 0.13, green: 0.31, blue: 0.49)
+
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
+        HStack(spacing: 14) {
+            MonogramTile(issuer: account.issuer)
+
+            VStack(alignment: .leading, spacing: 2) {
                 Text(account.issuer)
-                    .font(.headline)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(.primary)
                 Text(account.label)
-                    .font(.subheadline)
+                    .font(.system(size: 12))
                     .foregroundStyle(.secondary)
-                HStack(spacing: 8) {
-                    Text(formattedCode)
-                        .font(.system(.title2, design: .monospaced))
-                        .fontWeight(.semibold)
-                    Text("Expires in \(remaining)s")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
             }
-            Spacer()
+
+            Spacer(minLength: 12)
+
+            Text(formattedCode)
+                .font(.system(size: 22, weight: .regular, design: .monospaced))
+                .foregroundStyle(codeColor)
+                .monospacedDigit()
+                .lineLimit(1)
+                .fixedSize()
+
+            CountdownRing(remaining: remaining, period: account.period, tint: codeColor)
+                .frame(width: 26, height: 26)
+
             Button(action: copyCode) {
                 Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
-                    .foregroundStyle(showCopied ? .green : .primary)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(showCopied ? .green : .secondary)
+                    .frame(width: 30, height: 30)
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(Color.primary.opacity(0.06))
+                    )
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.plain)
         }
-        .padding(.vertical, 4)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.primary.opacity(0.04))
+        )
         .contentShape(Rectangle())
-        .onTapGesture {
-            copyCode()
-        }
+        .onTapGesture { copyCode() }
         .overlay(alignment: .center) {
             if showCopied {
                 Text("Copied to clipboard")
@@ -61,6 +79,10 @@ struct AccountRowView: View {
         guard code.count == account.digits else { return code }
         if account.digits == 6 {
             let mid = code.index(code.startIndex, offsetBy: 3)
+            return String(code[..<mid]) + " " + String(code[mid...])
+        }
+        if account.digits == 8 {
+            let mid = code.index(code.startIndex, offsetBy: 4)
             return String(code[..<mid]) + " " + String(code[mid...])
         }
         return code
@@ -119,5 +141,72 @@ struct AccountRowView: View {
                 }
             }
         }
+    }
+}
+
+private struct MonogramTile: View {
+    let issuer: String
+
+    var body: some View {
+        let color = MonogramPalette.color(for: issuer)
+        RoundedRectangle(cornerRadius: 10, style: .continuous)
+            .fill(color.opacity(0.18))
+            .frame(width: 40, height: 40)
+            .overlay(
+                Text(initial)
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
+                    .foregroundStyle(color)
+            )
+    }
+
+    private var initial: String {
+        guard let first = issuer.trimmingCharacters(in: .whitespaces).first else { return "?" }
+        return String(first)
+    }
+}
+
+private struct CountdownRing: View {
+    let remaining: Int
+    let period: Int
+    let tint: Color
+
+    var body: some View {
+        let progress = period > 0 ? Double(remaining) / Double(period) : 0
+        ZStack {
+            Circle()
+                .stroke(tint.opacity(0.18), lineWidth: 2)
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(tint, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .animation(.linear(duration: 0.5), value: remaining)
+            Text("\(remaining)")
+                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                .foregroundStyle(tint)
+        }
+    }
+}
+
+private enum MonogramPalette {
+    private static let colors: [Color] = [
+        Color(red: 0.36, green: 0.65, blue: 0.86), // blue
+        Color(red: 0.62, green: 0.49, blue: 0.86), // purple
+        Color(red: 0.40, green: 0.76, blue: 0.55), // green
+        Color(red: 0.95, green: 0.66, blue: 0.36), // orange
+        Color(red: 0.93, green: 0.45, blue: 0.62), // pink
+        Color(red: 0.36, green: 0.74, blue: 0.78), // teal
+        Color(red: 0.86, green: 0.55, blue: 0.36), // amber
+        Color(red: 0.55, green: 0.62, blue: 0.86), // indigo
+    ]
+
+    static func color(for issuer: String) -> Color {
+        let key = issuer.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !key.isEmpty else { return colors[0] }
+        var hash: UInt64 = 1469598103934665603
+        for byte in key.utf8 {
+            hash ^= UInt64(byte)
+            hash = hash &* 1099511628211
+        }
+        return colors[Int(hash % UInt64(colors.count))]
     }
 }
