@@ -1,6 +1,7 @@
 # Mac2FA
 
-Mac2FA is a lightweight macOS two-factor authentication app for generating TOTP codes locally. It supports Google Authenticator imports, standard `otpauth://` TOTP accounts, and local secret storage through the macOS Keychain.
+Mac2FA works locally-offline with your Google Authenticator and with other apps by generating the same TOTp code. 
+It is a lightweight macOS two-factor authentication app for generating TOTP codes locally. It supports Google Authenticator imports, standard `otpauth://` TOTP accounts, and local secret storage through the macOS Keychain.
 
 ## Screenshots
 
