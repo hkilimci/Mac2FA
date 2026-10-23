@@ -20,12 +20,15 @@ struct Mac2FAApp: App {
                 Button("Check for Updates…") {
                     isCheckingForUpdates = true
                 }
+                // A window shows one sheet at a time.
+                .disabled(isAddingAccount)
             }
             CommandGroup(replacing: .newItem) {
                 Button("New Account…") {
                     isAddingAccount = true
                 }
                 .keyboardShortcut("n")
+                .disabled(isCheckingForUpdates)
             }
         }
     }
