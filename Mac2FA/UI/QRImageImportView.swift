@@ -1,133 +1,82 @@
 import SwiftUI
+import UniformTypeIdentifiers
 import Vision
 
 struct QRImageImportView: View {
-    var onDone: (Bool) -> Void
-    @State private var image: NSImage?
-    @State private var drafts: [OTPAccountDraft] = []
-    @State private var selectedIndices: Set<Int> = []
-    @State private var showingPreview = false
-    @State private var errorMessage: String?
-    @State private var showingError = false
+    /// Called with the accounts found in the image's QR codes.
+    let onFound: ([ImportCandidate]) -> Void
+
     @State private var isTargeted = false
-
-    private var selectableIndices: [Int] {
-        drafts.indices.filter { drafts[$0].type == .totp }
-    }
-
-    private var allSelectableSelected: Bool {
-        !selectableIndices.isEmpty && selectableIndices.allSatisfy { selectedIndices.contains($0) }
-    }
+    @State private var isChoosingFile = false
+    @State private var problem: String?
 
     var body: some View {
-        VStack {
-            if !showingPreview {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(isTargeted ? Color.accentColor : Color.secondary.opacity(0.3), style: StrokeStyle(lineWidth: 2, dash: [10]))
-                        .background(RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.05)))
+        VStack(spacing: 0) {
+            dropZone
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
 
-                    VStack(spacing: 12) {
-                        Image(systemName: "qrcode")
-                            .font(.system(size: 48))
-                            .foregroundStyle(.secondary)
-                        Text("Drag and drop a QR image here")
-                            .foregroundStyle(.secondary)
-                        Button("Select Image...") {
-                            selectImage()
-                        }
-                    }
+            SheetFooter {
+                Button("Choose Image…") {
+                    isChoosingFile = true
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding()
-                .onDrop(of: [.fileURL, .image], isTargeted: $isTargeted) { providers in
-                    handleDrop(providers: providers)
-                }
-            } else {
-                HStack {
-                    Button(allSelectableSelected ? "Deselect All" : "Select All") {
-                        if allSelectableSelected {
-                            selectedIndices.removeAll()
-                        } else {
-                            selectedIndices = Set(selectableIndices)
-                        }
-                    }
-                    .disabled(selectableIndices.isEmpty)
-                    Spacer()
-                    Text("\(selectedIndices.count) selected")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal)
-
-                List {
-                    ForEach(drafts.indices, id: \.self) { index in
-                        let draft = drafts[index]
-                        HStack {
-                            Toggle("", isOn: Binding(
-                                get: { selectedIndices.contains(index) },
-                                set: { isOn in
-                                    if isOn {
-                                        selectedIndices.insert(index)
-                                    } else {
-                                        selectedIndices.remove(index)
-                                    }
-                                }
-                            ))
-                            .labelsHidden()
-                            .disabled(draft.type != .totp)
-                            VStack(alignment: .leading) {
-                                Text(draft.issuer.isEmpty ? "Unknown" : draft.issuer)
-                                    .font(.headline)
-                                Text(draft.label)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            if draft.type == .hotp {
-                                Text("HOTP (unsupported)")
-                                    .font(.caption)
-                                    .foregroundStyle(.orange)
-                            } else {
-                                Text("TOTP \(draft.digits) digits")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                }
-
-                HStack {
-                    Button("Back") {
-                        showingPreview = false
-                    }
-                    Button("Import Selected (\(selectedIndices.count))") {
-                        importSelected()
-                    }
-                    .disabled(selectedIndices.isEmpty)
-                }
-                .padding()
             }
         }
-        .alert("Error", isPresented: $showingError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(errorMessage ?? "Unknown error")
+        .fileImporter(isPresented: $isChoosingFile, allowedContentTypes: [.image]) { result in
+            if case .success(let url) = result {
+                loadImage(at: url)
+            }
         }
-        .padding()
     }
 
-    private func selectImage() {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = false
-        panel.canChooseFiles = true
-        panel.allowedContentTypes = [.image, .png, .jpeg]
-        panel.beginSheetModal(for: NSApp.keyWindow!) { result in
-            if result == .OK, let url = panel.url, let image = NSImage(contentsOf: url) {
-                processImage(image)
+    private var dropZone: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "qrcode.viewfinder")
+                .font(.system(size: 44, weight: .light))
+                .foregroundStyle(isTargeted ? Color.accentColor : Color.secondary)
+            Text("Drop a QR Code Image Here")
+                .font(.headline)
+            Text("Use a screenshot of the QR code, or of the Transfer Accounts screen in Google Authenticator.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            if let problem {
+                Label(problem, systemImage: "exclamationmark.triangle.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(.red)
+                    .padding(.top, 4)
             }
         }
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(isTargeted ? Color.accentColor.opacity(0.08) : Color.primary.opacity(0.03))
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(
+                        isTargeted ? Color.accentColor : Color.secondary.opacity(0.4),
+                        style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])
+                    )
+            }
+        }
+        .animation(.easeOut(duration: 0.15), value: isTargeted)
+        .onDrop(of: [.fileURL, .image], isTargeted: $isTargeted) { providers in
+            handleDrop(providers: providers)
+        }
+    }
+
+    private func loadImage(at url: URL) {
+        let isScoped = url.startAccessingSecurityScopedResource()
+        defer {
+            if isScoped { url.stopAccessingSecurityScopedResource() }
+        }
+        guard let image = NSImage(contentsOf: url) else {
+            problem = "This file couldn't be opened as an image."
+            return
+        }
+        processImage(image)
     }
 
     private func handleDrop(providers: [NSItemProvider]) -> Bool {
@@ -159,75 +108,39 @@ struct QRImageImportView: View {
     }
 
     private func processImage(_ image: NSImage) {
+        problem = nil
         guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-            errorMessage = "Failed to read image."
-            showingError = true
+            problem = "This image couldn't be read."
             return
         }
 
-        let request = VNDetectBarcodesRequest { request, error in
-            guard let results = request.results as? [VNBarcodeObservation], !results.isEmpty else {
-                DispatchQueue.main.async {
-                    errorMessage = "No QR code found in image."
-                    showingError = true
-                }
-                return
-            }
-
-            var allDrafts: [OTPAccountDraft] = []
-            for result in results {
-                guard let payload = result.payloadStringValue else { continue }
-                if payload.hasPrefix("otpauth-migration://") {
-                    if let parsed = try? GoogleMigrationParser.parse(payload) {
-                        allDrafts.append(contentsOf: parsed)
-                    }
-                } else if payload.hasPrefix("otpauth://") {
-                    if let parsed = try? OTPAuthParser.parse(payload) {
-                        allDrafts.append(parsed)
-                    }
-                }
-            }
-
-            DispatchQueue.main.async {
-                if allDrafts.isEmpty {
-                    errorMessage = "No valid OTP QR codes found."
-                    showingError = true
-                } else {
-                    drafts = allDrafts
-                    selectedIndices = Set(allDrafts.indices.filter { allDrafts[$0].type == .totp })
-                    showingPreview = true
-                }
-            }
-        }
-        request.symbologies = [.qr]
-
-        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        let payloads: [String]
         do {
-            try handler.perform([request])
+            payloads = try QRCodeReader.payloads(in: cgImage)
         } catch {
-            self.errorMessage = "Failed to analyze image."
-            self.showingError = true
+            problem = "This image couldn't be analyzed."
+            return
         }
-    }
+        guard !payloads.isEmpty else {
+            problem = "No QR code was found in this image."
+            return
+        }
 
-    private func importSelected() {
-        let selected = selectedIndices.sorted().compactMap { drafts.indices.contains($0) ? drafts[$0] : nil }
-        Task {
-            var imported = 0
-            for draft in selected {
-                guard draft.type == .totp else { continue }
-                do {
-                    _ = try await AccountStore.shared.addAccount(draft: draft)
-                    imported += 1
-                } catch AccountStoreError.duplicateAccount {
-                    // Skip duplicates
-                } catch {
-                    // Skip failed
-                }
-            }
-            await MainActor.run {
-                onDone(imported > 0)
-            }
+        let drafts = payloads.flatMap { (try? OTPPayload.drafts(from: $0)) ?? [] }
+        guard !drafts.isEmpty else {
+            problem = "This QR code doesn't contain a two-factor authentication account."
+            return
         }
+        onFound(drafts.map(ImportCandidate.init(draft:)))
+    }
+}
+
+private enum QRCodeReader {
+    /// Text of every QR code found in the image.
+    static func payloads(in image: CGImage) throws -> [String] {
+        let request = VNDetectBarcodesRequest()
+        request.symbologies = [.qr]
+        try VNImageRequestHandler(cgImage: image, options: [:]).perform([request])
+        return (request.results ?? []).compactMap(\.payloadStringValue)
     }
 }

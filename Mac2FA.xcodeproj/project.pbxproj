@@ -27,6 +27,10 @@
 		A490D02E9FBD10D4C14F6B58 /* Base32.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09AD7B4CC1717166DD5BB53 /* Base32.swift */; };
 		AAAA000000000000000000A2 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA000000000000000000A1 /* UpdateChecker.swift */; };
 		AAAA000000000000000000B2 /* UpdateCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA000000000000000000B1 /* UpdateCheckView.swift */; };
+		AAAA000000000000000001A2 /* ImportReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA000000000000000001A1 /* ImportReviewView.swift */; };
+		AAAA000000000000000000F2 /* AccountsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA000000000000000000F1 /* AccountsModel.swift */; };
+		AAAA000000000000000000E2 /* ImportCandidate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA000000000000000000E1 /* ImportCandidate.swift */; };
+		AAAA000000000000000000D2 /* OneTimeCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA000000000000000000D1 /* OneTimeCode.swift */; };
 		B531C9651BBD2E0B08C6B5E6 /* TOTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359A012D3589F4989603E209 /* TOTP.swift */; };
 		B595D03650D4EB3E8D9CBA56 /* TOTPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38535B05B4EAE7E9487101C0 /* TOTPTests.swift */; };
 		C70F8E4E662F07EC07F10079 /* AddAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DD71B224EF9F0575CF4CBB8 /* AddAccountView.swift */; };
@@ -69,6 +73,10 @@
 		A5C126D2A61448FED25884B9 /* OTPAlgorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPAlgorithm.swift; sourceTree = "<group>"; };
 		AAAA000000000000000000A1 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		AAAA000000000000000000B1 /* UpdateCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCheckView.swift; sourceTree = "<group>"; };
+		AAAA000000000000000001A1 /* ImportReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportReviewView.swift; sourceTree = "<group>"; };
+		AAAA000000000000000000F1 /* AccountsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsModel.swift; sourceTree = "<group>"; };
+		AAAA000000000000000000E1 /* ImportCandidate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCandidate.swift; sourceTree = "<group>"; };
+		AAAA000000000000000000D1 /* OneTimeCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeCode.swift; sourceTree = "<group>"; };
 		B9EDAA17B1518F46F4B3F533 /* ClipboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardManager.swift; sourceTree = "<group>"; };
 		CD9B974C388BFDE0B73721EB /* OTPAuthParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPAuthParser.swift; sourceTree = "<group>"; };
 		D481BB1F159720B3B1793B7D /* HOTP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOTP.swift; sourceTree = "<group>"; };
@@ -114,6 +122,8 @@
 				FAC65D4DCFD8DDB168286811 /* PasteURIView.swift */,
 				0E4F924FA5866717A87AB206 /* QRImageImportView.swift */,
 				AAAA000000000000000000B1 /* UpdateCheckView.swift */,
+				AAAA000000000000000001A1 /* ImportReviewView.swift */,
+				AAAA000000000000000000F1 /* AccountsModel.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -196,6 +206,8 @@
 				1766847ABE8534E9A0647A0A /* OTPAccount.swift */,
 				A5C126D2A61448FED25884B9 /* OTPAlgorithm.swift */,
 				9C19A6D1F4C908A2446C0213 /* OTPType.swift */,
+				AAAA000000000000000000E1 /* ImportCandidate.swift */,
+				AAAA000000000000000000D1 /* OneTimeCode.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -305,6 +317,10 @@
 				19DC412F16C76BDA456AA83F /* TimeProvider.swift in Sources */,
 				AAAA000000000000000000A2 /* UpdateChecker.swift in Sources */,
 				AAAA000000000000000000B2 /* UpdateCheckView.swift in Sources */,
+				AAAA000000000000000001A2 /* ImportReviewView.swift in Sources */,
+				AAAA000000000000000000F2 /* AccountsModel.swift in Sources */,
+				AAAA000000000000000000E2 /* ImportCandidate.swift in Sources */,
+				AAAA000000000000000000D2 /* OneTimeCode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

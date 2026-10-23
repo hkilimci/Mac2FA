@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="Mac2FA/Assets.xcassets/AppIcon.appiconset/Icon-mac-128x128@2x.png" alt="Mac2FA app icon" width="128" height="128">
+</p>
+
 # Mac2FA
 
-Mac2FA works locally-offline with your Google Authenticator and with other apps by generating the same TOTp code. 
+Mac2FA works locally-offline with your Google Authenticator and with other apps by generating the same TOTP code. 
 It is a lightweight macOS two-factor authentication app for generating TOTP codes locally. It supports Google Authenticator imports, standard `otpauth://` TOTP accounts, and local secret storage through the macOS Keychain.
 
 ## Screenshots
@@ -21,15 +25,29 @@ It is a lightweight macOS two-factor authentication app for generating TOTP code
 
 ## Features
 
-- Generate TOTP codes for saved accounts.
-- Copy codes by clicking an account row or the copy button.
+- Generate TOTP codes for saved accounts, with a countdown ring that turns red in the last five seconds.
+- Copy a code by clicking it, double-clicking its row, or selecting the row and pressing Return or ⌘C. Copied codes are cleared from the clipboard after 30 seconds.
 - Search accounts by issuer or account label.
-- Add accounts manually with Base32 secrets.
-- Import standard `otpauth://` TOTP URIs by pasting them.
-- Import Google Authenticator migration links and QR codes.
+- Add accounts with a Base32 setup key, with live validation.
+- Import standard `otpauth://` TOTP links by pasting them, one per line.
+- Import Google Authenticator migration links and QR codes, and choose which accounts to import.
 - Import OTP QR codes from image files or drag-and-drop.
-- Delete accounts from the list or context menu.
+- Delete accounts from the context menu or with the Delete key.
 - Check GitHub releases for app updates.
+
+## Keyboard Shortcuts
+
+| Action | Shortcut |
+| --- | --- |
+| Add an account | ⌘N |
+| Copy the selected code | ⌘C or Return |
+| Delete the selected account | Delete |
+
+## Design
+
+The interface follows the macOS Human Interface Guidelines: a single window with a native list and toolbar search, standard sheets with Cancel and default buttons, inline validation, system colors that adapt to light and dark mode, and VoiceOver labels for codes and countdowns.
+
+The app icon follows the macOS icon grid (an 824 × 824 pt continuous-corner shape on a 1024 × 1024 canvas). Its countdown ring is the same one shown next to each code. The vector source is in `docs/icon/AppIcon.svg`.
 
 ## Requirements
 

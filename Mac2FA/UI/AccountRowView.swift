@@ -2,211 +2,176 @@ import SwiftUI
 
 struct AccountRowView: View {
     let account: OTPAccount
-    @State private var code: String = ""
-    @State private var remaining: Int = 30
-    @State private var timer: Timer? = nil
-    @State private var showCopied = false
-
-    private let codeColor = Color(red: 0.13, green: 0.31, blue: 0.49)
+    let model: AccountsModel
 
     var body: some View {
-        HStack(spacing: 14) {
-            MonogramTile(issuer: account.issuer)
+        HStack(spacing: 12) {
+            AccountMonogram(name: account.issuer.isEmpty ? account.label : account.issuer)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(account.issuer)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.primary)
-                Text(account.label)
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.headline)
+                    .lineLimit(1)
+                if !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
             }
 
             Spacer(minLength: 12)
 
-            Text(formattedCode)
-                .font(.system(size: 22, weight: .regular, design: .monospaced))
-                .foregroundStyle(codeColor)
-                .monospacedDigit()
-                .lineLimit(1)
-                .fixedSize()
-
-            CountdownRing(remaining: remaining, period: account.period, tint: codeColor)
-                .frame(width: 26, height: 26)
-
-            Button(action: copyCode) {
-                Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(showCopied ? .green : .secondary)
-                    .frame(width: 30, height: 30)
-                    .background(
-                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                            .fill(Color.primary.opacity(0.06))
-                    )
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.primary.opacity(0.04))
-        )
-        .contentShape(Rectangle())
-        .onTapGesture { copyCode() }
-        .overlay(alignment: .center) {
-            if showCopied {
-                Text("Copied to clipboard")
-                    .font(.callout)
-                    .fontWeight(.medium)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.green.opacity(0.5), lineWidth: 1))
-                    .transition(.opacity.combined(with: .scale))
-            }
-        }
-        .task {
-            updateCode()
-            startTimer()
-        }
-        .onDisappear {
-            timer?.invalidate()
-        }
-    }
-
-    private var formattedCode: String {
-        guard code.count == account.digits else { return code }
-        if account.digits == 6 {
-            let mid = code.index(code.startIndex, offsetBy: 3)
-            return String(code[..<mid]) + " " + String(code[mid...])
-        }
-        if account.digits == 8 {
-            let mid = code.index(code.startIndex, offsetBy: 4)
-            return String(code[..<mid]) + " " + String(code[mid...])
-        }
-        return code
-    }
-
-    private func updateCode() {
-        guard account.type == .totp else {
-            code = "HOTP not supported"
-            return
-        }
-        Task {
-            guard let secret = await AccountStore.shared.getSecret(for: account) else {
-                await MainActor.run { code = "Error" }
-                return
-            }
-            do {
-                let newCode = try TOTP.generate(
-                    secret: secret,
-                    time: TimeProvider.now(),
-                    period: account.period,
-                    algorithm: account.algorithm,
-                    digits: account.digits
-                )
-                let newRemaining = TOTP.remainingSeconds(for: TimeProvider.now(), period: account.period)
-                await MainActor.run {
-                    self.code = newCode
-                    self.remaining = newRemaining
-                }
-            } catch {
-                await MainActor.run { self.code = "Error" }
-            }
-        }
-    }
-
-    private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            Task { @MainActor in
-                updateCode()
-            }
-        }
-    }
-
-    private func copyCode() {
-        let cleanCode = code.replacingOccurrences(of: " ", with: "")
-        Task {
-            await ClipboardManager.shared.copyCode(cleanCode)
-            await MainActor.run {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    showCopied = true
-                }
-            }
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
-            await MainActor.run {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    showCopied = false
+            // Ticks on whole seconds so codes roll over exactly on their TOTP boundary.
+            TimelineView(.periodic(from: .currentSecond, by: 1)) { context in
+                CodeButton(
+                    code: model.code(for: account, at: context.date),
+                    isCopied: model.recentlyCopiedID == account.id
+                ) {
+                    model.copyCode(for: account)
                 }
             }
         }
+        .padding(.vertical, 6)
+        .accessibilityElement(children: .combine)
+        .accessibilityAction(named: "Copy Code") {
+            model.copyCode(for: account)
+        }
+    }
+
+    private var title: String {
+        if !account.issuer.isEmpty { return account.issuer }
+        return account.label.isEmpty ? "Unnamed Account" : account.label
+    }
+
+    private var subtitle: String {
+        account.issuer.isEmpty ? "" : account.label
     }
 }
 
-private struct MonogramTile: View {
-    let issuer: String
+/// The current code and its countdown; clicking it copies the code.
+private struct CodeButton: View {
+    let code: OneTimeCode?
+    let isCopied: Bool
+    let copy: () -> Void
+
+    @State private var isHovering = false
 
     var body: some View {
-        let color = MonogramPalette.color(for: issuer)
-        RoundedRectangle(cornerRadius: 10, style: .continuous)
-            .fill(color.opacity(0.18))
-            .frame(width: 40, height: 40)
-            .overlay(
-                Text(initial)
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-                    .foregroundStyle(color)
-            )
+        Button(action: copy) {
+            HStack(spacing: 10) {
+                Text(code?.formatted ?? "––– –––")
+                    .font(.system(.title2, design: .rounded, weight: .semibold).monospacedDigit())
+                    .foregroundStyle(codeColor)
+                    .contentTransition(.numericText())
+                    .animation(.default, value: code?.value)
+
+                ZStack {
+                    if isCopied {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 17))
+                            .foregroundStyle(.green)
+                            .transition(.scale.combined(with: .opacity))
+                    } else {
+                        CountdownRing(
+                            fraction: code?.fractionRemaining ?? 0,
+                            tint: code?.isExpiring == true ? .red : .accentColor
+                        )
+                        .transition(.opacity)
+                    }
+                }
+                .frame(width: 18, height: 18)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background {
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(.quaternary)
+                    .opacity(isHovering ? 1 : 0)
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .disabled(code == nil)
+        .onHover { isHovering = $0 }
+        .animation(.easeOut(duration: 0.15), value: isHovering)
+        .animation(.spring(duration: 0.3), value: isCopied)
+        .help("Copy Code")
+        .accessibilityLabel(Text(isCopied ? "Code copied" : "Code"))
+        .accessibilityValue(spokenValue)
     }
 
-    private var initial: String {
-        guard let first = issuer.trimmingCharacters(in: .whitespaces).first else { return "?" }
-        return String(first)
+    private var codeColor: Color {
+        if isCopied { return .green }
+        if code?.isExpiring == true { return .red }
+        return .primary
+    }
+
+    private var spokenValue: String {
+        guard let code else { return "Unavailable" }
+        return "\(code.spoken), expires in \(code.secondsRemaining) seconds"
     }
 }
 
+/// Drains as the code's period runs out, the same ring as in the app icon.
 private struct CountdownRing: View {
-    let remaining: Int
-    let period: Int
+    let fraction: Double
     let tint: Color
 
     var body: some View {
-        let progress = period > 0 ? Double(remaining) / Double(period) : 0
         ZStack {
             Circle()
-                .stroke(tint.opacity(0.18), lineWidth: 2)
+                .stroke(tint.opacity(0.2), lineWidth: 2.5)
             Circle()
-                .trim(from: 0, to: progress)
-                .stroke(tint, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .trim(from: 0, to: fraction)
+                .stroke(tint, style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .animation(.linear(duration: 0.5), value: remaining)
-            Text("\(remaining)")
-                .font(.system(size: 9, weight: .semibold, design: .rounded))
-                .foregroundStyle(tint)
+                .animation(.linear(duration: 1), value: fraction)
         }
+        .padding(1.25)
     }
 }
 
-private enum MonogramPalette {
-    private static let colors: [Color] = [
-        Color(red: 0.36, green: 0.65, blue: 0.86), // blue
-        Color(red: 0.62, green: 0.49, blue: 0.86), // purple
-        Color(red: 0.40, green: 0.76, blue: 0.55), // green
-        Color(red: 0.95, green: 0.66, blue: 0.36), // orange
-        Color(red: 0.93, green: 0.45, blue: 0.62), // pink
-        Color(red: 0.36, green: 0.74, blue: 0.78), // teal
-        Color(red: 0.86, green: 0.55, blue: 0.36), // amber
-        Color(red: 0.55, green: 0.62, blue: 0.86), // indigo
-    ]
+/// A colored tile with the account's initial, in the style of macOS app icons.
+struct AccountMonogram: View {
+    let name: String
+    var size: CGFloat = 32
 
-    static func color(for issuer: String) -> Color {
-        let key = issuer.trimmingCharacters(in: .whitespaces).lowercased()
-        guard !key.isEmpty else { return colors[0] }
+    var body: some View {
+        RoundedRectangle(cornerRadius: size * 0.225, style: .continuous)
+            .fill(color.gradient)
+            .frame(width: size, height: size)
+            .overlay {
+                Text(initial)
+                    .font(.system(size: size * 0.5, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+            }
+            .accessibilityHidden(true)
+    }
+
+    private var initial: String {
+        guard let first = name.trimmingCharacters(in: .whitespaces).first else { return "?" }
+        return String(first).uppercased()
+    }
+
+    private var color: Color {
+        let palette: [Color] = [.blue, .indigo, .purple, .pink, .red, .orange, .green, .teal, .brown, .gray]
+        let key = name.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !key.isEmpty else { return .gray }
+        // FNV-1a, so each issuer keeps the same color across launches.
         var hash: UInt64 = 1469598103934665603
         for byte in key.utf8 {
             hash ^= UInt64(byte)
             hash = hash &* 1099511628211
         }
-        return colors[Int(hash % UInt64(colors.count))]
+        return palette[Int(hash % UInt64(palette.count))]
+    }
+}
+
+private extension Date {
+    /// Now, truncated to the whole second.
+    static var currentSecond: Date {
+        Date(timeIntervalSince1970: Date().timeIntervalSince1970.rounded(.down))
     }
 }

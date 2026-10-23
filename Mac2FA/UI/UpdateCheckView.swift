@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct UpdateCheckView: View {
@@ -10,82 +11,91 @@ struct UpdateCheckView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 12) {
-                Image(systemName: iconName)
-                    .font(.system(size: 28))
-                    .foregroundStyle(iconColor)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title).font(.headline)
-                    Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 16) {
+                Image(nsImage: NSApp.applicationIconImage)
+                    .resizable()
+                    .frame(width: 64, height: 64)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(title)
+                        .font(.headline)
+                    Text(message)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if isChecking {
+                        ProgressView()
+                            .progressViewStyle(.linear)
+                            .padding(.top, 4)
+                    }
                 }
-                Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             if case .updateAvailable(_, _, _, let notes) = result, let notes, !notes.isEmpty {
-                Divider()
-                Text("Release Notes").font(.subheadline).bold()
-                ScrollView {
-                    Text(notes)
-                        .font(.callout)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .textSelection(.enabled)
+                GroupBox {
+                    ScrollView {
+                        Text(notes)
+                            .font(.callout)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .textSelection(.enabled)
+                            .padding(4)
+                    }
+                    .frame(maxHeight: 180)
+                } label: {
+                    Text("Release Notes")
                 }
-                .frame(maxHeight: 180)
             }
 
-            HStack {
-                Button("Recheck") { Task { await runCheck() } }
-                    .disabled(isChecking)
-                Spacer()
-                if case .updateAvailable(_, _, let url, _) = result {
-                    Button("Download") { openURL(url) }
-                        .keyboardShortcut(.defaultAction)
+            HStack(spacing: 12) {
+                if errorMessage != nil {
+                    Button("Try Again") {
+                        Task { await runCheck() }
+                    }
                 }
-                Button("Close") { dismiss() }
-                    .keyboardShortcut(.cancelAction)
+                Spacer()
+                buttons
             }
         }
         .padding(20)
-        .frame(width: 460)
+        .frame(width: 440)
         .task { await runCheck() }
     }
 
-    private var iconName: String {
-        if isChecking { return "arrow.triangle.2.circlepath" }
-        if errorMessage != nil { return "exclamationmark.triangle.fill" }
-        switch result {
-        case .updateAvailable: return "arrow.down.circle.fill"
-        case .upToDate: return "checkmark.circle.fill"
-        case .none: return "questionmark.circle"
-        }
-    }
-
-    private var iconColor: Color {
-        if errorMessage != nil { return .orange }
-        switch result {
-        case .updateAvailable: return .accentColor
-        case .upToDate: return .green
-        default: return .secondary
+    @ViewBuilder
+    private var buttons: some View {
+        if case .updateAvailable(_, _, let url, _) = result {
+            Button("Not Now") { dismiss() }
+                .keyboardShortcut(.cancelAction)
+            Button("Download") {
+                openURL(url)
+                dismiss()
+            }
+            .keyboardShortcut(.defaultAction)
+        } else {
+            Button(isChecking ? "Cancel" : "OK") { dismiss() }
+                .keyboardShortcut(isChecking ? KeyboardShortcut.cancelAction : KeyboardShortcut.defaultAction)
         }
     }
 
     private var title: String {
-        if isChecking { return "Checking for updates…" }
-        if errorMessage != nil { return "Update check failed" }
+        if isChecking { return "Checking for Updates…" }
+        if errorMessage != nil { return "Couldn't Check for Updates" }
         switch result {
-        case .updateAvailable(_, let latest, _, _): return "Version \(latest) is available"
-        case .upToDate: return "You're up to date"
+        case .updateAvailable(_, let latest, _, _): return "Mac2FA \(latest) Is Available"
+        case .upToDate: return "Mac2FA Is Up to Date"
         case .none: return "Check for Updates"
         }
     }
 
-    private var subtitle: String {
+    private var message: String {
         if let errorMessage { return errorMessage }
         let current = UpdateChecker.currentVersion
         switch result {
-        case .updateAvailable(let cur, _, _, _): return "Installed: \(cur)"
-        case .upToDate: return "Installed: \(current)"
-        case .none: return "Installed: \(current)"
+        case .updateAvailable(let installed, _, _, _): return "You have version \(installed). Download the new version from GitHub."
+        case .upToDate: return "Version \(current) is the latest version."
+        case .none: return "You have version \(current)."
         }
     }
 
