@@ -1,57 +1,72 @@
 import SwiftUI
 
 struct AccountListView: View {
-    @State private var accounts: [OTPAccount] = []
-    @State private var searchText: String = ""
-    @State private var showingAddSheet = false
-    @State private var timer: Timer? = nil
+    @Binding var isAddingAccount: Bool
+
+    @State private var model = AccountsModel()
+    @State private var searchText = ""
+    @State private var selection: OTPAccount.ID?
     @State private var accountPendingDeletion: OTPAccount?
 
-    var filteredAccounts: [OTPAccount] {
-        if searchText.isEmpty { return accounts }
-        return accounts.filter {
-            $0.issuer.localizedCaseInsensitiveContains(searchText) ||
-            $0.label.localizedCaseInsensitiveContains(searchText)
-        }
+    private var visibleAccounts: [OTPAccount] {
+        model.filteredAccounts(matching: searchText)
     }
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(filteredAccounts) { account in
-                    AccountRowView(account: account)
-                        .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                        .contextMenu {
-                            Button(role: .destructive) {
-                                accountPendingDeletion = account
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                        }
+            List(selection: $selection) {
+                ForEach(visibleAccounts) { account in
+                    AccountRowView(account: account, model: model)
                 }
-                .onDelete(perform: deleteAccount)
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .searchable(text: $searchText, placement: .toolbar)
+            .listStyle(.inset)
+            .contextMenu(forSelectionType: OTPAccount.ID.self) { ids in
+                if let account = firstAccount(in: ids) {
+                    Button("Copy Code") {
+                        model.copyCode(for: account)
+                    }
+                    Divider()
+                    Button("Delete", role: .destructive) {
+                        accountPendingDeletion = account
+                    }
+                }
+            } primaryAction: { ids in
+                // Double-click or Return copies, like opening an item elsewhere on macOS.
+                if let account = firstAccount(in: ids) {
+                    model.copyCode(for: account)
+                }
+            }
+            .onCopyCommand {
+                guard let account = selectedAccount else { return [] }
+                return model.itemProvidersForCopy(of: account)
+            }
+            .onDeleteCommand {
+                accountPendingDeletion = selectedAccount
+            }
+            .overlay {
+                emptyState
+            }
+            .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
             .navigationTitle("Mac2FA")
-        .toolbar {
-            ToolbarItem {
-                Button(action: { showingAddSheet = true }) {
-                    Label("Add Account", systemImage: "plus")
+            .navigationSubtitle(subtitle)
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        isAddingAccount = true
+                    } label: {
+                        Label("Add Account", systemImage: "plus")
+                    }
+                    .help("Add Account")
                 }
             }
         }
-        .sheet(isPresented: $showingAddSheet) {
-            AddAccountView { _ in
-                showingAddSheet = false
-                Task { await loadAccounts() }
-            }
+        .sheet(isPresented: $isAddingAccount, onDismiss: {
+            Task { await model.reload() }
+        }) {
+            AddAccountView()
         }
         .confirmationDialog(
-            confirmationTitle,
+            deletionTitle,
             isPresented: Binding(
                 get: { accountPendingDeletion != nil },
                 set: { if !$0 { accountPendingDeletion = nil } }
@@ -59,29 +74,53 @@ struct AccountListView: View {
             presenting: accountPendingDeletion
         ) { account in
             Button("Delete", role: .destructive) {
-                confirmDelete(account)
+                delete(account)
             }
             Button("Cancel", role: .cancel) {
                 accountPendingDeletion = nil
             }
-        } message: { account in
-            Text("This will permanently remove \(displayName(for: account)) and its secret from the keychain.")
+        } message: { _ in
+            Text("Its secret is removed from your keychain. This doesn't turn off two-factor authentication for the service, so make sure you can still sign in another way.")
         }
         .task {
-            await loadAccounts()
-            startTimer()
-        }
-        .onDisappear {
-            timer?.invalidate()
-        }
+            await model.reload()
         }
     }
 
-    private var confirmationTitle: String {
-        if let account = accountPendingDeletion {
-            return "Delete \(displayName(for: account))?"
+    @ViewBuilder
+    private var emptyState: some View {
+        if model.hasLoaded && model.accounts.isEmpty {
+            ContentUnavailableView {
+                Label("No Accounts", systemImage: "lock.shield")
+            } description: {
+                Text("Add an account with its setup key, an otpauth link, or a QR code exported from Google Authenticator.")
+            } actions: {
+                Button("Add Account…") {
+                    isAddingAccount = true
+                }
+            }
+        } else if visibleAccounts.isEmpty && !searchText.isEmpty {
+            ContentUnavailableView.search(text: searchText)
         }
-        return "Delete account?"
+    }
+
+    private var subtitle: String {
+        guard model.hasLoaded else { return "" }
+        return model.accounts.count == 1 ? "1 account" : "\(model.accounts.count) accounts"
+    }
+
+    private var selectedAccount: OTPAccount? {
+        model.accounts.first { $0.id == selection }
+    }
+
+    private var deletionTitle: String {
+        guard let account = accountPendingDeletion else { return "Delete account?" }
+        return "Delete “\(displayName(for: account))”?"
+    }
+
+    private func firstAccount(in ids: Set<OTPAccount.ID>) -> OTPAccount? {
+        guard let id = ids.first else { return nil }
+        return model.accounts.first { $0.id == id }
     }
 
     private func displayName(for account: OTPAccount) -> String {
@@ -91,33 +130,11 @@ struct AccountListView: View {
         return account.issuer.isEmpty ? account.label : account.issuer
     }
 
-    private func loadAccounts() async {
-        accounts = await AccountStore.shared.getAllAccounts()
-    }
-
-    private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            Task { @MainActor in
-                accounts = await AccountStore.shared.getAllAccounts()
-            }
-        }
-    }
-
-    private func deleteAccount(at offsets: IndexSet) {
-        for index in offsets {
-            let account = filteredAccounts[index]
-            Task {
-                try? await AccountStore.shared.deleteAccount(id: account.id)
-                await loadAccounts()
-            }
-        }
-    }
-
-    private func confirmDelete(_ account: OTPAccount) {
+    private func delete(_ account: OTPAccount) {
         accountPendingDeletion = nil
-        Task {
-            try? await AccountStore.shared.deleteAccount(id: account.id)
-            await loadAccounts()
+        if selection == account.id {
+            selection = nil
         }
+        Task { await model.delete(account) }
     }
 }

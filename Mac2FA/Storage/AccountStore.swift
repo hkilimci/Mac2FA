@@ -169,4 +169,27 @@ actor AccountStore {
     func getSecret(for account: OTPAccount) -> Data? {
         return try? KeychainStore.retrieve(identifier: account.secretIdentifier)
     }
+
+    func importDrafts(_ drafts: [OTPAccountDraft]) async -> ImportSummary {
+        var summary = ImportSummary()
+        for draft in drafts {
+            do {
+                _ = try await addAccount(draft: draft)
+                summary.imported += 1
+            } catch AccountStoreError.duplicateAccount {
+                summary.duplicates += 1
+            } catch {
+                summary.failed += 1
+            }
+        }
+        return summary
+    }
+}
+
+struct ImportSummary {
+    var imported = 0
+    var duplicates = 0
+    var failed = 0
+
+    var skipped: Int { duplicates + failed }
 }

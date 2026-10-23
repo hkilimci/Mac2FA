@@ -9,6 +9,12 @@ actor ClipboardManager {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(code, forType: .string)
+        scheduleClear(of: code)
+    }
+
+    /// Clears `code` from the pasteboard after 30 seconds unless something else was copied since.
+    /// Called directly when the system Copy command (⌘C) has already written the pasteboard.
+    func scheduleClear(of code: String) {
         lastCopiedCode = code
 
         Task {

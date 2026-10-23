@@ -2,22 +2,30 @@ import SwiftUI
 
 @main
 struct Mac2FAApp: App {
-    @State private var showingUpdateCheck = false
+    @State private var isAddingAccount = false
+    @State private var isCheckingForUpdates = false
 
     var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .sheet(isPresented: $showingUpdateCheck) {
+        // A single window: there is one list of accounts, so File > New Window wouldn't mean anything.
+        Window("Mac2FA", id: "main") {
+            ContentView(isAddingAccount: $isAddingAccount)
+                .sheet(isPresented: $isCheckingForUpdates) {
                     UpdateCheckView()
                 }
         }
-        .windowStyle(.automatic)
-        .defaultSize(width: 600, height: 500)
+        .defaultSize(width: 560, height: 620)
+        .windowResizability(.contentMinSize)
         .commands {
             CommandGroup(after: .appInfo) {
                 Button("Check for Updates…") {
-                    showingUpdateCheck = true
+                    isCheckingForUpdates = true
                 }
+            }
+            CommandGroup(replacing: .newItem) {
+                Button("New Account…") {
+                    isAddingAccount = true
+                }
+                .keyboardShortcut("n")
             }
         }
     }

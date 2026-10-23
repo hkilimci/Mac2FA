@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Binding var isAddingAccount: Bool
+
     var body: some View {
-        AccountListView()
-            .frame(minWidth: 500, minHeight: 400)
+        AccountListView(isAddingAccount: $isAddingAccount)
+            .frame(minWidth: 440, minHeight: 360)
     }
 }
