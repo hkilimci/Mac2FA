@@ -33,7 +33,7 @@ It is a lightweight macOS two-factor authentication app for generating TOTP code
 - Import Google Authenticator migration links and QR codes, and choose which accounts to import.
 - Import OTP QR codes from image files or drag-and-drop.
 - Delete accounts from the context menu or with the Delete key.
-- Check GitHub releases for app updates.
+- Check GitHub releases for app updates and download the latest DMG directly. Open the DMG and drag Mac2FA to Applications to replace the installed version.
 
 ## Keyboard Shortcuts
 

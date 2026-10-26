@@ -68,7 +68,7 @@ struct UpdateCheckView: View {
         if case .updateAvailable(_, _, let url, _) = result {
             Button("Not Now") { dismiss() }
                 .keyboardShortcut(.cancelAction)
-            Button("Download") {
+            Button("Download DMG") {
                 openURL(url)
                 dismiss()
             }
@@ -93,7 +93,7 @@ struct UpdateCheckView: View {
         if let errorMessage { return errorMessage }
         let current = UpdateChecker.currentVersion
         switch result {
-        case .updateAvailable(let installed, _, _, _): return "You have version \(installed). Download the new version from GitHub."
+        case .updateAvailable(let installed, _, _, _): return "You have version \(installed). Download and open the DMG, then drag Mac2FA to Applications to replace the installed version."
         case .upToDate: return "Version \(current) is the latest version."
         case .none: return "You have version \(current)."
         }
