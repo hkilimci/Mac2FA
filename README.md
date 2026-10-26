@@ -9,18 +9,20 @@ It is a lightweight macOS two-factor authentication app for generating TOTP code
 
 ## Screenshots
 
+The current interface, shown with demo accounts and setup keys.
+
 <p>
-  <img src="docs/screenshots/mac2fa-1.png" alt="Mac2FA account list with local TOTP codes" width="720">
+  <img src="docs/screenshots/mac2fa-1.png" alt="Mac2FA account list with eight demo accounts, TOTP codes, and countdown rings" width="720">
 </p>
 
 <p>
-  <img src="docs/screenshots/mac2fa-2.png" alt="Mac2FA QR image import screen" width="360">
-  <img src="docs/screenshots/mac2fa-3.png" alt="Mac2FA Google Authenticator migration import preview" width="360">
+  <img src="docs/screenshots/mac2fa-2.png" alt="Mac2FA QR Code import screen with an image drop zone" width="360">
+  <img src="docs/screenshots/mac2fa-3.png" alt="Mac2FA import review with three demo accounts selected" width="360">
 </p>
 
 <p>
-  <img src="docs/screenshots/mac2fa-4.png" alt="Mac2FA Google Authenticator migration URI paste screen" width="360">
-  <img src="docs/screenshots/mac2fa-5.png" alt="Mac2FA manual TOTP account setup screen" width="360">
+  <img src="docs/screenshots/mac2fa-4.png" alt="Mac2FA Link entry screen with a demo otpauth link" width="360">
+  <img src="docs/screenshots/mac2fa-5.png" alt="Mac2FA Setup Key screen with demo details and advanced TOTP settings" width="360">
 </p>
 
 ## Features
@@ -51,6 +53,7 @@ The app icon follows the macOS icon grid (an 824 × 824 pt continuous-corner sha
 
 ## Requirements
 
+- Supports Intel (`x86_64`) and Apple silicon (`arm64`) Macs with a single universal app.
 - macOS 14.0 or later
 - Xcode with Swift 6 support
 - XcodeGen, only if you want to regenerate `Mac2FA.xcodeproj` from `project.yml`
