@@ -3,18 +3,28 @@ import Foundation
 struct GitHubRelease: Decodable {
     let tagName: String
     let name: String?
-    let htmlUrl: String
     let body: String?
     let prerelease: Bool
     let draft: Bool
+    let assets: [Asset]
+
+    struct Asset: Decodable {
+        let name: String
+        let browserDownloadUrl: String
+
+        enum CodingKeys: String, CodingKey {
+            case name
+            case browserDownloadUrl = "browser_download_url"
+        }
+    }
 
     enum CodingKeys: String, CodingKey {
         case tagName = "tag_name"
         case name
-        case htmlUrl = "html_url"
         case body
         case prerelease
         case draft
+        case assets
     }
 }
 
@@ -28,13 +38,15 @@ enum UpdateCheckError: LocalizedError {
     case httpStatus(Int)
     case noReleases
     case invalidURL
+    case noDMG
 
     var errorDescription: String? {
         switch self {
         case .invalidResponse: return "Invalid response from GitHub."
         case .httpStatus(let code): return "GitHub returned HTTP \(code)."
         case .noReleases: return "No published releases found."
-        case .invalidURL: return "Release URL was malformed."
+        case .invalidURL: return "The DMG download URL was malformed."
+        case .noDMG: return "The latest release does not have a DMG download. Please try again later."
         }
     }
 }
@@ -56,12 +68,21 @@ struct UpdateChecker {
 
     func check() async throws -> UpdateCheckResult {
         let release = try await fetchLatestRelease()
-        let current = Self.currentVersion
+        return try Self.result(for: release, currentVersion: Self.currentVersion)
+    }
+
+    static func result(for release: GitHubRelease, currentVersion current: String) throws -> UpdateCheckResult {
+        guard !release.draft, !release.prerelease else { throw UpdateCheckError.noReleases }
         let latest = Self.normalize(release.tagName)
-        guard let url = URL(string: release.htmlUrl) else {
-            throw UpdateCheckError.invalidURL
-        }
         if Self.compare(current, latest) == .orderedAscending {
+            guard let asset = release.assets.first(where: { $0.name.lowercased().hasSuffix(".dmg") }) else {
+                throw UpdateCheckError.noDMG
+            }
+            guard let url = URL(string: asset.browserDownloadUrl),
+                  url.scheme == "https", url.host != nil,
+                  url.pathExtension.lowercased() == "dmg" else {
+                throw UpdateCheckError.invalidURL
+            }
             return .updateAvailable(current: current, latest: latest, url: url, notes: release.body)
         }
         return .upToDate(current: current)
