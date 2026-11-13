@@ -3,7 +3,8 @@ import SwiftUI
 struct AccountListView: View {
     @Binding var isAddingAccount: Bool
 
-    @State private var model = AccountsModel()
+    @Environment(QuickAccess.self) private var quickAccess
+    private var model: AccountsModel { quickAccess.model }
     @State private var searchText = ""
     @State private var selection: OTPAccount.ID?
     @State private var accountPendingDeletion: OTPAccount?
@@ -14,42 +15,22 @@ struct AccountListView: View {
 
     var body: some View {
         NavigationStack {
-            List(selection: $selection) {
-                ForEach(visibleAccounts) { account in
-                    AccountRowView(account: account, model: model)
+            VStack(spacing: 0) {
+                CopyRequestButtons()
+                if let error = quickAccess.lock.error {
+                    Text(error)
+                        .font(.callout)
+                        .foregroundStyle(.red)
+                        .padding(.horizontal)
                 }
+                accountList
             }
-            .listStyle(.inset)
-            .contextMenu(forSelectionType: OTPAccount.ID.self) { ids in
-                if let account = firstAccount(in: ids) {
-                    Button("Copy Code") {
-                        model.copyCode(for: account)
-                    }
-                    Divider()
-                    Button("Delete", role: .destructive) {
-                        accountPendingDeletion = account
-                    }
-                }
-            } primaryAction: { ids in
-                // Double-click or Return copies, like opening an item elsewhere on macOS.
-                if let account = firstAccount(in: ids) {
-                    model.copyCode(for: account)
-                }
-            }
-            .onCopyCommand {
-                guard let account = selectedAccount else { return [] }
-                return model.itemProvidersForCopy(of: account)
-            }
-            .onDeleteCommand {
-                accountPendingDeletion = selectedAccount
-            }
-            .overlay {
-                emptyState
-            }
-            .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
             .navigationTitle("Mac2FA")
             .navigationSubtitle(subtitle)
             .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    LockButton()
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         isAddingAccount = true
@@ -82,9 +63,44 @@ struct AccountListView: View {
         } message: { _ in
             Text("Its secret is removed from your keychain. This doesn't turn off two-factor authentication for the service, so make sure you can still sign in another way.")
         }
-        .task {
-            await model.reload()
+    }
+
+    private var accountList: some View {
+        List(selection: $selection) {
+            ForEach(visibleAccounts) { account in
+                AccountRowView(account: account, model: model)
+            }
         }
+        .listStyle(.inset)
+        .contextMenu(forSelectionType: OTPAccount.ID.self) { ids in
+            if let account = firstAccount(in: ids) {
+                Button("Copy Code") {
+                    Task { await quickAccess.copy(account) }
+                }
+                Divider()
+                Button("Delete", role: .destructive) {
+                    accountPendingDeletion = account
+                }
+            }
+        } primaryAction: { ids in
+            // Double-click or Return copies, like opening an item elsewhere on macOS.
+            if let account = firstAccount(in: ids) {
+                Task { await quickAccess.copy(account) }
+            }
+        }
+        .onCopyCommand {
+            if let account = selectedAccount {
+                Task { await quickAccess.copy(account) }
+            }
+            return []
+        }
+        .onDeleteCommand {
+            accountPendingDeletion = selectedAccount
+        }
+        .overlay {
+            emptyState
+        }
+        .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
     }
 
     @ViewBuilder
@@ -115,19 +131,12 @@ struct AccountListView: View {
 
     private var deletionTitle: String {
         guard let account = accountPendingDeletion else { return "Delete account?" }
-        return "Delete “\(displayName(for: account))”?"
+        return "Delete “\(account.displayName)”?"
     }
 
     private func firstAccount(in ids: Set<OTPAccount.ID>) -> OTPAccount? {
         guard let id = ids.first else { return nil }
         return model.accounts.first { $0.id == id }
-    }
-
-    private func displayName(for account: OTPAccount) -> String {
-        if !account.issuer.isEmpty && !account.label.isEmpty {
-            return "\(account.issuer) (\(account.label))"
-        }
-        return account.issuer.isEmpty ? account.label : account.issuer
     }
 
     private func delete(_ account: OTPAccount) {

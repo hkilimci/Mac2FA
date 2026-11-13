@@ -35,6 +35,8 @@ The current interface, shown with demo accounts and setup keys.
 - Import Google Authenticator migration links and QR codes, and choose which accounts to import.
 - Import OTP QR codes from image files or drag-and-drop.
 - Delete accounts from the context menu or with the Delete key.
+- Unlock codes with Touch ID or your Mac password. Use the menu bar to copy codes or lock Mac2FA.
+- Enable the global copy shortcut, website suggestions, or account links in Settings.
 - Check GitHub releases for app updates and download the latest DMG directly. Open the DMG and drag Mac2FA to Applications to replace the installed version.
 
 ## Keyboard Shortcuts
@@ -43,7 +45,19 @@ The current interface, shown with demo accounts and setup keys.
 | --- | --- |
 | Add an account | ⌘N |
 | Copy the selected code | ⌘C or Return |
+| Copy the last used account from any app, when enabled | ⌥⌘C |
+| Lock Mac2FA | ⌃⌘L |
 | Delete the selected account | Delete |
+
+## Quick Access
+
+Mac2FA starts locked by default and locks again when the display sleeps or the macOS user session switches out. Turning off the lock requires device authentication.
+
+In **Settings → Websites & Links**, add HTTPS login URLs to an account. With website suggestions enabled, Mac2FA reads the active tab in Safari, Chrome, Brave, Edge, Arc, or Vivaldi using macOS Automation permission. The host, port, and path must match. Query parameters and fragments are ignored. Assign a page to one account, then use the **Copy Code** or **Unlock and Copy** button in Mac2FA to copy the suggestion.
+
+Enable copy links in the same settings tab and choose **Copy Account Link**. Each link identifies one saved account. Opening it asks you to confirm before Mac2FA copies the code.
+
+**Settings → Proximity** can check a paired Bluetooth device or a local IPv4 address on demand. Connection status is informational.
 
 ## Design
 

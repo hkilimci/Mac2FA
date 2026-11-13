@@ -5,14 +5,21 @@ import Observation
 @MainActor
 @Observable
 final class AccountsModel {
+    let lock: AppLock
     private(set) var accounts: [OTPAccount] = []
     private(set) var hasLoaded = false
+    private(set) var lastCopiedID: OTPAccount.ID?
     /// The account whose code was just copied, so its row can confirm it.
     private(set) var recentlyCopiedID: OTPAccount.ID?
 
     /// Secrets keyed by keychain identifier, read once instead of on every tick.
     private var secrets: [String: Data] = [:]
     @ObservationIgnored private var copyFeedbackTask: Task<Void, Never>?
+    @ObservationIgnored private var reloadGeneration = 0
+
+    init(lock: AppLock) {
+        self.lock = lock
+    }
 
     func filteredAccounts(matching query: String) -> [OTPAccount] {
         let query = query.trimmingCharacters(in: .whitespaces)
@@ -24,7 +31,14 @@ final class AccountsModel {
     }
 
     func reload() async {
+        reloadGeneration += 1
+        let generation = reloadGeneration
         let loaded = await AccountStore.shared.getAllAccounts()
+        guard generation == reloadGeneration else { return }
+        accounts = loaded
+        hasLoaded = true
+        guard !lock.isLocked else { return }
+
         var loadedSecrets: [String: Data] = [:]
         for account in loaded {
             if let secret = secrets[account.secretIdentifier] {
@@ -32,14 +46,19 @@ final class AccountsModel {
             } else if let secret = await AccountStore.shared.getSecret(for: account) {
                 loadedSecrets[account.secretIdentifier] = secret
             }
+            guard generation == reloadGeneration, !lock.isLocked else { return }
         }
         secrets = loadedSecrets
-        accounts = loaded
-        hasLoaded = true
+    }
+
+    func clearSecrets() {
+        reloadGeneration += 1
+        secrets.removeAll()
     }
 
     func code(for account: OTPAccount, at date: Date) -> OneTimeCode? {
-        guard account.type == .totp, let secret = secrets[account.secretIdentifier] else { return nil }
+        guard !lock.isLocked, account.type == .totp,
+              let secret = secrets[account.secretIdentifier] else { return nil }
         guard let value = try? TOTP.generate(
             secret: secret,
             time: date,
@@ -52,16 +71,8 @@ final class AccountsModel {
 
     func copyCode(for account: OTPAccount) {
         guard let code = self.code(for: account, at: TimeProvider.now()) else { return }
-        Task { await ClipboardManager.shared.copyCode(code.value) }
+        ClipboardManager.shared.copyCode(code.value)
         confirmCopy(of: account)
-    }
-
-    /// Supplies the code to the system Copy command (⌘C), which writes the pasteboard itself.
-    func itemProvidersForCopy(of account: OTPAccount) -> [NSItemProvider] {
-        guard let code = self.code(for: account, at: TimeProvider.now()) else { return [] }
-        Task { await ClipboardManager.shared.scheduleClear(of: code.value) }
-        confirmCopy(of: account)
-        return [NSItemProvider(object: code.value as NSString)]
     }
 
     func delete(_ account: OTPAccount) async {
@@ -70,6 +81,7 @@ final class AccountsModel {
     }
 
     private func confirmCopy(of account: OTPAccount) {
+        lastCopiedID = account.id
         recentlyCopiedID = account.id
         copyFeedbackTask?.cancel()
         copyFeedbackTask = Task {

@@ -1,36 +1,37 @@
 import AppKit
 
-actor ClipboardManager {
+@MainActor
+final class ClipboardManager {
     static let shared = ClipboardManager()
 
-    private var lastCopiedCode: String?
+    private var changeCount: Int?
+    private var clearTask: Task<Void, Never>?
 
     func copyCode(_ code: String) {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
-        pasteboard.setString(code, forType: .string)
-        scheduleClear(of: code)
-    }
-
-    /// Clears `code` from the pasteboard after 30 seconds unless something else was copied since.
-    /// Called directly when the system Copy command (⌘C) has already written the pasteboard.
-    func scheduleClear(of code: String) {
-        lastCopiedCode = code
-
-        Task {
-            try? await Task.sleep(nanoseconds: 30_000_000_000)
-            clearIfUnchanged(code: code)
+        if pasteboard.setString(code, forType: .string) {
+            scheduleClear(changeCount: pasteboard.changeCount)
         }
     }
 
-    private func clearIfUnchanged(code: String) {
+    private func scheduleClear(changeCount: Int) {
+        clearTask?.cancel()
+        self.changeCount = changeCount
+        clearTask = Task {
+            try? await Task.sleep(for: .seconds(30))
+            guard !Task.isCancelled else { return }
+            clearIfUnchanged()
+        }
+    }
+
+    func clearIfUnchanged() {
+        clearTask?.cancel()
+        clearTask = nil
         let pasteboard = NSPasteboard.general
-        guard let current = pasteboard.string(forType: .string), current == code else {
-            return
-        }
-        if lastCopiedCode == code {
+        if pasteboard.changeCount == changeCount {
             pasteboard.clearContents()
-            lastCopiedCode = nil
         }
+        changeCount = nil
     }
 }

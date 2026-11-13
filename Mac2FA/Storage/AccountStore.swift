@@ -7,6 +7,8 @@ enum AccountStoreError: Error {
     case invalidAlgorithm
     case failedToGenerateCode
     case duplicateAccount
+    case accountNotFound
+    case websiteAlreadyAssigned
 }
 
 actor AccountStore {
@@ -35,7 +37,7 @@ actor AccountStore {
 
     private func saveAccounts() throws {
         let data = try JSONEncoder().encode(accounts)
-        try data.write(to: fileURL)
+        try data.write(to: fileURL, options: .atomic)
     }
 
     func getAllAccounts() -> [OTPAccount] {
@@ -136,7 +138,8 @@ actor AccountStore {
             type: draft.type,
             counter: draft.counter,
             createdAt: existing.createdAt,
-            updatedAt: Date()
+            updatedAt: Date(),
+            websites: existing.websites
         )
 
         accounts[existingIndex] = account
@@ -164,6 +167,26 @@ actor AccountStore {
             throw error
         }
         try? KeychainStore.delete(identifier: account.secretIdentifier)
+    }
+
+    func setWebsites(_ websites: [WebsiteRule], for id: OTPAccount.ID) throws {
+        loadAccountsIfNeeded()
+        guard let index = accounts.firstIndex(where: { $0.id == id }) else {
+            throw AccountStoreError.accountNotFound
+        }
+        guard !accounts.contains(where: { account in
+            account.id != id && (account.websites ?? []).contains(where: websites.contains)
+        }) else { throw AccountStoreError.websiteAlreadyAssigned }
+
+        let previous = accounts[index]
+        accounts[index].websites = websites.isEmpty ? nil : websites
+        accounts[index].updatedAt = Date()
+        do {
+            try saveAccounts()
+        } catch {
+            accounts[index] = previous
+            throw error
+        }
     }
 
     func getSecret(for account: OTPAccount) -> Data? {
