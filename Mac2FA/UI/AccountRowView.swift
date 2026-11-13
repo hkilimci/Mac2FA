@@ -3,6 +3,7 @@ import SwiftUI
 struct AccountRowView: View {
     let account: OTPAccount
     let model: AccountsModel
+    @Environment(QuickAccess.self) private var quickAccess
 
     var body: some View {
         HStack(spacing: 12) {
@@ -23,20 +24,29 @@ struct AccountRowView: View {
 
             Spacer(minLength: 12)
 
-            // Ticks on whole seconds so codes roll over exactly on their TOTP boundary.
-            TimelineView(.periodic(from: .currentSecond, by: 1)) { context in
-                CodeButton(
-                    code: model.code(for: account, at: context.date),
-                    isCopied: model.recentlyCopiedID == account.id
-                ) {
-                    model.copyCode(for: account)
+            if quickAccess.lock.isLocked {
+                Button {
+                    Task { await quickAccess.copy(account) }
+                } label: {
+                    Label("Unlock to Copy", systemImage: "lock")
+                }
+                .buttonStyle(.borderless)
+            } else {
+                // Ticks on whole seconds so codes roll over exactly on their TOTP boundary.
+                TimelineView(.periodic(from: .currentSecond, by: 1)) { context in
+                    CodeButton(
+                        code: model.code(for: account, at: context.date),
+                        isCopied: model.recentlyCopiedID == account.id
+                    ) {
+                        Task { await quickAccess.copy(account) }
+                    }
                 }
             }
         }
         .padding(.vertical, 6)
         .accessibilityElement(children: .combine)
         .accessibilityAction(named: "Copy Code") {
-            model.copyCode(for: account)
+            Task { await quickAccess.copy(account) }
         }
     }
 

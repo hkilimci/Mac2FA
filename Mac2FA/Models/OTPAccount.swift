@@ -12,4 +12,10 @@ struct OTPAccount: Identifiable, Codable, Equatable {
     var counter: UInt64?
     var createdAt: Date
     var updatedAt: Date
+    var websites: [WebsiteRule]? = nil
+
+    var displayName: String {
+        if issuer.isEmpty { return label.isEmpty ? "Unnamed Account" : label }
+        return label.isEmpty ? issuer : "\(issuer) (\(label))"
+    }
 }

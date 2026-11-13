@@ -39,6 +39,15 @@
 		E089488AED9101D0C1168350 /* ManualEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046846CFF20ACA253D4077DB /* ManualEntryView.swift */; };
 		E995EDFEFDABD1D2AF76F8C9 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC03520671A93F3BDB1ED05 /* KeychainStore.swift */; };
 		FCEF00869FA07DFBCB224DA5 /* OTPAuthParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76371394755FB67DEFEF601E /* OTPAuthParserTests.swift */; };
+		2A3CA7FE9EDE047457E76615 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323566C81A08698876030F47 /* AppDelegate.swift */; };
+		8032ED67D6A94FB7A173967E /* AppLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E573F54E6077263DD8B4BB0 /* AppLock.swift */; };
+		0D09432F360FC7D344158304 /* BrowserTabReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89829CB7906B677D374E4B30 /* BrowserTabReader.swift */; };
+		ABB7696DACD3C9A2939A4D39 /* GlobalCopyShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE66DCDBC5109FBA0D090A1 /* GlobalCopyShortcut.swift */; };
+		777EC846C6A80B030724C71B /* ProximityStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5DBB4591D072B4B13E2F60C /* ProximityStatus.swift */; };
+		89DA02DC5E70A050E3EAAF84 /* QuickAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9476DF8EF3D2693A8E0B368D /* QuickAccess.swift */; };
+		A72120ABF0E2264F0EE0AD2A /* WebsiteRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49E93751035D14DE80598AC /* WebsiteRule.swift */; };
+		E71BC898F30F84BBEABBE356 /* QuickAccessViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CA3DB2BAC22B64CC51860B /* QuickAccessViews.swift */; };
+		40310CA287519274D40D1363 /* QuickAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139D1F6F92D6D351A004143C /* QuickAccessTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +98,15 @@
 		E588296F845F33A58DC220AB /* Mac2FAApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mac2FAApp.swift; sourceTree = "<group>"; };
 		E8C13F910B9487C7C5FC4DB0 /* AccountListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListView.swift; sourceTree = "<group>"; };
 		FAC65D4DCFD8DDB168286811 /* PasteURIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteURIView.swift; sourceTree = "<group>"; };
+		323566C81A08698876030F47 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		5E573F54E6077263DD8B4BB0 /* AppLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLock.swift; sourceTree = "<group>"; };
+		89829CB7906B677D374E4B30 /* BrowserTabReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserTabReader.swift; sourceTree = "<group>"; };
+		1CE66DCDBC5109FBA0D090A1 /* GlobalCopyShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalCopyShortcut.swift; sourceTree = "<group>"; };
+		E5DBB4591D072B4B13E2F60C /* ProximityStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProximityStatus.swift; sourceTree = "<group>"; };
+		9476DF8EF3D2693A8E0B368D /* QuickAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickAccess.swift; sourceTree = "<group>"; };
+		F49E93751035D14DE80598AC /* WebsiteRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsiteRule.swift; sourceTree = "<group>"; };
+		03CA3DB2BAC22B64CC51860B /* QuickAccessViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickAccessViews.swift; sourceTree = "<group>"; };
+		139D1F6F92D6D351A004143C /* QuickAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickAccessTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -104,6 +122,7 @@
 		28476D6160DFC586A30A6387 /* Mac2FATests */ = {
 			isa = PBXGroup;
 			children = (
+				139D1F6F92D6D351A004143C /* QuickAccessTests.swift */,
 				DFF23ABAD1364427F44E1CD5 /* Base32Tests.swift */,
 				03E4B13120C1B354798B8956 /* GoogleMigrationParserTests.swift */,
 				5B18EF97EB2CA448D3714392 /* Info.plist */,
@@ -117,6 +136,7 @@
 		458A2FF400ACBA1A4F116950 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				03CA3DB2BAC22B64CC51860B /* QuickAccessViews.swift */,
 				E8C13F910B9487C7C5FC4DB0 /* AccountListView.swift */,
 				264AAF7D15E7135F12029354 /* AccountRowView.swift */,
 				9DD71B224EF9F0575CF4CBB8 /* AddAccountView.swift */,
@@ -160,6 +180,12 @@
 		AA8181336F9F953817570A95 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				9476DF8EF3D2693A8E0B368D /* QuickAccess.swift */,
+				E5DBB4591D072B4B13E2F60C /* ProximityStatus.swift */,
+				1CE66DCDBC5109FBA0D090A1 /* GlobalCopyShortcut.swift */,
+				89829CB7906B677D374E4B30 /* BrowserTabReader.swift */,
+				5E573F54E6077263DD8B4BB0 /* AppLock.swift */,
+				323566C81A08698876030F47 /* AppDelegate.swift */,
 				E588296F845F33A58DC220AB /* Mac2FAApp.swift */,
 			);
 			path = App;
@@ -206,6 +232,7 @@
 		E5D930FD304568C7AF802F36 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				F49E93751035D14DE80598AC /* WebsiteRule.swift */,
 				1766847ABE8534E9A0647A0A /* OTPAccount.swift */,
 				A5C126D2A61448FED25884B9 /* OTPAlgorithm.swift */,
 				9C19A6D1F4C908A2446C0213 /* OTPType.swift */,
@@ -298,6 +325,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E71BC898F30F84BBEABBE356 /* QuickAccessViews.swift in Sources */,
+				A72120ABF0E2264F0EE0AD2A /* WebsiteRule.swift in Sources */,
+				89DA02DC5E70A050E3EAAF84 /* QuickAccess.swift in Sources */,
+				777EC846C6A80B030724C71B /* ProximityStatus.swift in Sources */,
+				ABB7696DACD3C9A2939A4D39 /* GlobalCopyShortcut.swift in Sources */,
+				0D09432F360FC7D344158304 /* BrowserTabReader.swift in Sources */,
+				8032ED67D6A94FB7A173967E /* AppLock.swift in Sources */,
+				2A3CA7FE9EDE047457E76615 /* AppDelegate.swift in Sources */,
 				757F48AA7134DA4F457382C6 /* AccountListView.swift in Sources */,
 				850A5FB67398B9AF8F1CE7B4 /* AccountRowView.swift in Sources */,
 				18ABE34AA36951E4406D866F /* AccountStore.swift in Sources */,
@@ -331,6 +366,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40310CA287519274D40D1363 /* QuickAccessTests.swift in Sources */,
 				D4A75157BAFC22E159B62B46 /* Base32Tests.swift in Sources */,
 				375D0D68DEABC32AD6D64B5E /* GoogleMigrationParserTests.swift in Sources */,
 				FCEF00869FA07DFBCB224DA5 /* OTPAuthParserTests.swift in Sources */,
