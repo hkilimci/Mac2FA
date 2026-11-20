@@ -34,6 +34,7 @@ The current interface, shown with demo accounts and setup keys.
 - Import standard `otpauth://` TOTP links by pasting them, one per line.
 - Import Google Authenticator migration links and QR codes, and choose which accounts to import.
 - Import OTP QR codes from image files or drag-and-drop.
+- Export all accounts to JSON with optional password encryption and restore them from a Mac2FA export. See [Account Backups](#account-backups).
 - Delete accounts from the context menu or with the Delete key.
 - Unlock codes with Touch ID or your Mac password. Use the menu bar to copy codes or lock Mac2FA.
 - Enable the global copy shortcut, website suggestions, or account links in Settings.
@@ -117,6 +118,27 @@ Mac2FA stores account metadata in:
 ```
 
 OTP secrets are stored separately in the macOS Keychain under the `Mac2FA` service name. Deleting an account removes both its metadata and its associated Keychain secret.
+
+## Account Backups
+
+### Export Accounts
+
+Unlock Mac2FA and click **Export Accounts** beside **+**, or choose **File → Export Accounts…**. The export includes every saved account, its setup key, and its settings.
+
+- Enter and confirm a password to encrypt the file.
+- Leave the password blank to save unencrypted JSON. Anyone who can open that file can read the setup keys.
+
+Click **Export…**, choose a location, and save the file.
+
+### Import Accounts
+
+Unlock Mac2FA and click **Import Accounts** beside **+**, or choose **File → Import Accounts…**. Choose a Mac2FA JSON export, enter its password if it’s encrypted, then click **Import**. Mac2FA restores setup keys, OTP settings, and website assignments. It skips accounts with a matching ID or issuer and label, and keeps website assignments already in use.
+
+### Account Export Format
+
+Version 1 exports use JSON with `format: "Mac2FA"`, `version: 1`, and an `accounts` array. Each `secret` is an unpadded Base32 setup key and can be used with the account’s OTP settings in another authenticator. Account timestamps are Unix seconds.
+
+Password-protected files wrap that JSON in a versioned envelope. To decrypt it, derive a 32-byte key from the UTF-8 password using PBKDF2-HMAC-SHA256 with the envelope’s `iterations` and Base64-decoded `salt`. Base64-decode `sealedData` and open it with AES-256-GCM. It contains a 12-byte nonce, followed by the ciphertext and a 16-byte authentication tag. The decrypted bytes are the UTF-8 account JSON.
 
 ## Authenticator Compatibility
 

@@ -6,14 +6,33 @@ struct Mac2FAApp: App {
     @State private var quickAccess = QuickAccess.shared
     @State private var isAddingAccount = false
     @State private var isCheckingForUpdates = false
+    @State private var isExportingAccounts = false
+    @State private var isImportingAccounts = false
+
+    private var isShowingSheet: Bool {
+        isAddingAccount || isCheckingForUpdates || isExportingAccounts || isImportingAccounts
+    }
 
     var body: some Scene {
         // A single window: there is one list of accounts, so File > New Window wouldn't mean anything.
         Window("Mac2FA", id: "main") {
-            ContentView(isAddingAccount: $isAddingAccount)
+            ContentView(
+                isAddingAccount: $isAddingAccount,
+                isImportingAccounts: $isImportingAccounts,
+                isExportingAccounts: $isExportingAccounts,
+                isShowingSheet: isShowingSheet
+            )
                 .environment(quickAccess)
                 .sheet(isPresented: $isCheckingForUpdates) {
                     UpdateCheckView()
+                }
+                .sheet(isPresented: $isExportingAccounts) {
+                    ExportAccountsView(lock: quickAccess.lock)
+                }
+                .sheet(isPresented: $isImportingAccounts, onDismiss: {
+                    Task { await quickAccess.model.reload() }
+                }) {
+                    ImportAccountsView(lock: quickAccess.lock)
                 }
         }
         .defaultSize(width: 560, height: 620)
@@ -23,15 +42,28 @@ struct Mac2FAApp: App {
                 Button("Check for Updates…") {
                     isCheckingForUpdates = true
                 }
-                // A window shows one sheet at a time.
-                .disabled(isAddingAccount)
+                .disabled(isShowingSheet)
             }
             CommandGroup(replacing: .newItem) {
                 Button("New Account…") {
                     isAddingAccount = true
                 }
                 .keyboardShortcut("n")
-                .disabled(isCheckingForUpdates)
+                .disabled(isShowingSheet)
+
+                Divider()
+
+                Button("Import Accounts…") {
+                    quickAccess.openMainWindow?()
+                    isImportingAccounts = true
+                }
+                .disabled(isShowingSheet || quickAccess.lock.isLocked)
+
+                Button("Export Accounts…") {
+                    quickAccess.openMainWindow?()
+                    isExportingAccounts = true
+                }
+                .disabled(isShowingSheet || quickAccess.lock.isLocked || quickAccess.model.accounts.isEmpty)
             }
             CommandMenu("Security") {
                 if quickAccess.lock.isLocked {

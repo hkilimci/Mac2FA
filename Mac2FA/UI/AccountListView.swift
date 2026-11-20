@@ -2,6 +2,9 @@ import SwiftUI
 
 struct AccountListView: View {
     @Binding var isAddingAccount: Bool
+    @Binding var isImportingAccounts: Bool
+    @Binding var isExportingAccounts: Bool
+    let isShowingSheet: Bool
 
     @Environment(QuickAccess.self) private var quickAccess
     private var model: AccountsModel { quickAccess.model }
@@ -31,13 +34,30 @@ struct AccountListView: View {
                 ToolbarItem(placement: .navigation) {
                     LockButton()
                 }
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button {
+                        isImportingAccounts = true
+                    } label: {
+                        Label("Import Accounts", systemImage: "square.and.arrow.down")
+                    }
+                    .help("Import Accounts")
+                    .disabled(isShowingSheet || quickAccess.lock.isLocked)
+
+                    Button {
+                        isExportingAccounts = true
+                    } label: {
+                        Label("Export Accounts", systemImage: "square.and.arrow.up")
+                    }
+                    .help("Export Accounts")
+                    .disabled(isShowingSheet || quickAccess.lock.isLocked || model.accounts.isEmpty)
+
                     Button {
                         isAddingAccount = true
                     } label: {
                         Label("Add Account", systemImage: "plus")
                     }
                     .help("Add Account")
+                    .disabled(isShowingSheet)
                 }
             }
         }

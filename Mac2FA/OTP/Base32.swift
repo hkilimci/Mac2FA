@@ -15,6 +15,26 @@ struct Base32 {
         return table
     }()
 
+    static func encode(_ data: Data) -> String {
+        let symbols = Array(alphabet.utf8)
+        var result: [UInt8] = []
+        var buffer: UInt16 = 0
+        var bits = 0
+
+        for byte in data {
+            buffer = (buffer << 8) | UInt16(byte)
+            bits += 8
+            while bits >= 5 {
+                bits -= 5
+                result.append(symbols[Int((buffer >> bits) & 31)])
+            }
+        }
+        if bits > 0 {
+            result.append(symbols[Int((buffer << (5 - bits)) & 31)])
+        }
+        return String(decoding: result, as: UTF8.self)
+    }
+
     static func decode(_ string: String) throws -> Data {
         let cleaned = string
             .uppercased()

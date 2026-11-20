@@ -1,6 +1,6 @@
 import Foundation
 
-struct WebsiteRule: Codable, Equatable {
+struct WebsiteRule: Codable, Hashable, Sendable {
     let host: String
     let port: Int
     let path: String
