@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		21A7D61FF86B4B6DBD240D31 /* AccountExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A7D61FF86B4B6DBD240D30 /* AccountExport.swift */; };
+		21A7D61FF86B4B6DBD240D33 /* ExportAccountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A7D61FF86B4B6DBD240D32 /* ExportAccountsView.swift */; };
+		21A7D61FF86B4B6DBD240D35 /* AccountExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A7D61FF86B4B6DBD240D34 /* AccountExportTests.swift */; };
+		21A7D61FF86B4B6DBD240D37 /* ImportAccountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21A7D61FF86B4B6DBD240D36 /* ImportAccountsView.swift */; };
 		149CADE6027F64E1EE57E7EC /* Mac2FAApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E588296F845F33A58DC220AB /* Mac2FAApp.swift */; };
 		18ABE34AA36951E4406D866F /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0ACF7D1F6607B0A4BC1373 /* AccountStore.swift */; };
 		19DC412F16C76BDA456AA83F /* TimeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D884277297307539181434DC /* TimeProvider.swift */; };
@@ -61,6 +65,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		21A7D61FF86B4B6DBD240D30 /* AccountExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExport.swift; sourceTree = "<group>"; };
+		21A7D61FF86B4B6DBD240D32 /* ExportAccountsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportAccountsView.swift; sourceTree = "<group>"; };
+		21A7D61FF86B4B6DBD240D34 /* AccountExportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExportTests.swift; sourceTree = "<group>"; };
+		21A7D61FF86B4B6DBD240D36 /* ImportAccountsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportAccountsView.swift; sourceTree = "<group>"; };
 		03E4B13120C1B354798B8956 /* GoogleMigrationParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleMigrationParserTests.swift; sourceTree = "<group>"; };
 		046846CFF20ACA253D4077DB /* ManualEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualEntryView.swift; sourceTree = "<group>"; };
 		0E4F924FA5866717A87AB206 /* QRImageImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageImportView.swift; sourceTree = "<group>"; };
@@ -114,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				6D0ACF7D1F6607B0A4BC1373 /* AccountStore.swift */,
+				21A7D61FF86B4B6DBD240D30 /* AccountExport.swift */,
 				1AC03520671A93F3BDB1ED05 /* KeychainStore.swift */,
 			);
 			path = Storage;
@@ -123,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				139D1F6F92D6D351A004143C /* QuickAccessTests.swift */,
+				21A7D61FF86B4B6DBD240D34 /* AccountExportTests.swift */,
 				DFF23ABAD1364427F44E1CD5 /* Base32Tests.swift */,
 				03E4B13120C1B354798B8956 /* GoogleMigrationParserTests.swift */,
 				5B18EF97EB2CA448D3714392 /* Info.plist */,
@@ -141,6 +151,8 @@
 				264AAF7D15E7135F12029354 /* AccountRowView.swift */,
 				9DD71B224EF9F0575CF4CBB8 /* AddAccountView.swift */,
 				7AC1E830EDA36AF6FD675584 /* ContentView.swift */,
+				21A7D61FF86B4B6DBD240D32 /* ExportAccountsView.swift */,
+				21A7D61FF86B4B6DBD240D36 /* ImportAccountsView.swift */,
 				046846CFF20ACA253D4077DB /* ManualEntryView.swift */,
 				FAC65D4DCFD8DDB168286811 /* PasteURIView.swift */,
 				0E4F924FA5866717A87AB206 /* QRImageImportView.swift */,
@@ -336,6 +348,9 @@
 				757F48AA7134DA4F457382C6 /* AccountListView.swift in Sources */,
 				850A5FB67398B9AF8F1CE7B4 /* AccountRowView.swift in Sources */,
 				18ABE34AA36951E4406D866F /* AccountStore.swift in Sources */,
+				21A7D61FF86B4B6DBD240D31 /* AccountExport.swift in Sources */,
+				21A7D61FF86B4B6DBD240D33 /* ExportAccountsView.swift in Sources */,
+				21A7D61FF86B4B6DBD240D37 /* ImportAccountsView.swift in Sources */,
 				C70F8E4E662F07EC07F10079 /* AddAccountView.swift in Sources */,
 				A490D02E9FBD10D4C14F6B58 /* Base32.swift in Sources */,
 				1D8E13801925B6A412BF82ED /* ClipboardManager.swift in Sources */,
@@ -367,6 +382,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				40310CA287519274D40D1363 /* QuickAccessTests.swift in Sources */,
+				21A7D61FF86B4B6DBD240D35 /* AccountExportTests.swift in Sources */,
 				D4A75157BAFC22E159B62B46 /* Base32Tests.swift in Sources */,
 				375D0D68DEABC32AD6D64B5E /* GoogleMigrationParserTests.swift in Sources */,
 				FCEF00869FA07DFBCB224DA5 /* OTPAuthParserTests.swift in Sources */,
@@ -414,7 +430,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = J2WJMC3K74;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Mac2FA/Info.plist;
@@ -425,7 +441,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.mac2fa;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
@@ -497,7 +513,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = J2WJMC3K74;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Mac2FA/Info.plist;
@@ -508,7 +524,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.mac2fa;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
